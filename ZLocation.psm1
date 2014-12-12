@@ -37,7 +37,7 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
             $hash.Remove($key)
         }
     }
-    $res = $hash.GetEnumerator() | sort -Property Value
+    $res = $hash.GetEnumerator() | sort -Property Value -Descending
     if ($res) {
         $res | %{$_.Name}
     }
@@ -46,6 +46,12 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
 function Test-FuzzyMatch([string]$path, [string[]]$query)
 {
     $n = $query.Length
+    if ($n -eq 0)
+    {
+        # empty query match to everything
+        return $true
+    }
+
     for ($i=0; $i -le $n-1; $i++)
     {
         if (-not ($path -match $query[$i]))
@@ -63,6 +69,9 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
 
 function Set-ZLocation()
 {
+    if (-not $args) {
+        $args = @()
+    }
     $matches = Find-Matches (Get-ZLocation) $args
     if ($matches) {
         Push-Location ($matches | Select-Object -First 1)
