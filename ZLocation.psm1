@@ -55,7 +55,7 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     }   
     
     $leaf = Split-Path -Leaf $path
-    return ($path -match $query[$n-1]) 
+    return ($leaf -match $query[$n-1]) 
 }
 #
 # End of querying logic.
@@ -67,10 +67,10 @@ function Set-ZLocation()
     if ($matches) {
         Push-Location ($matches | Select-Object -First 1)
     } else {
-        Write-Warning "Cannot find mathing location"
+        Write-Warning "Cannot find matching location"
     }
 }
 
 Set-Alias -Name z -Value Set-ZLocation
 
-Export-ModuleMember -Function Set-ZLocation -Alias z
+Export-ModuleMember -Function Set-ZLocation, Get-ZLocation -Alias z
