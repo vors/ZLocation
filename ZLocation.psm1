@@ -30,14 +30,11 @@ function Update-ZLocation([string]$path)
 #
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
-    foreach ($q in $query) 
+    foreach ($key in ($hash.GetEnumerator().Name)) 
     {
-        foreach ($key in ($hash.GetEnumerator().Name)) 
+        if (-not (Test-FuzzyMatch $key $query)) 
         {
-            if (-not ($key.Contains($q))) 
-            {
-                $hash.Remove($key)
-            }
+            $hash.Remove($key)
         }
     }
     $res = $hash.GetEnumerator() | sort -Property Value
@@ -46,6 +43,20 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
     }
 }
 
+function Test-FuzzyMatch([string]$path, [string[]]$query)
+{
+    $n = $query.Length
+    for ($i=0; $i -le $n-1; $i++)
+    {
+        if (-not ($path -match $query[$i]))
+        {
+            return $false
+        }
+    }   
+    
+    $leaf = Split-Path -Leaf $path
+    return ($path -match $query[$n-1]) 
+}
 #
 # End of querying logic.
 #
@@ -61,3 +72,5 @@ function Set-ZLocation()
 }
 
 Set-Alias -Name z -Value Set-ZLocation
+
+Export-ModuleMember -Function Set-ZLocation -Alias z
