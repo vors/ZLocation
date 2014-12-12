@@ -29,8 +29,13 @@ function Get-ZService()
         if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
         {
             Set-Types
+            
             $binding = [System.ServiceModel.NetNamedPipeBinding]::new()
             $binding.OpenTimeout = [timespan]::MaxValue
+            $binding.CloseTimeout = [timespan]::MaxValue
+            $binding.ReceiveTimeout = [timespan]::MaxValue
+            $binding.SendTimeout = [timespan]::MaxValue
+            
             $pipeFactory = [System.ServiceModel.ChannelFactory[ZLocation.IService]]::new(
                 $binding, 
                 [System.ServiceModel.EndpointAddress]::new("$($baseAddress)/$($pipename)"))    
