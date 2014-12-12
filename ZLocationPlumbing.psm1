@@ -10,15 +10,44 @@ function Get-ZService()
     $pipename = "zlocation"
     $backupFilePath = Join-Path $env:HOMEDRIVE (Join-Path $env:HOMEPATH "z-location.txt")
 
+    function log([string] $message)
+    {
+         Write-Host -ForegroundColor Yellow "[ZLocation] $message"
+    }
+
     #
     # Add nessesary types.
     # Time consuming, don't run it too often.
     #
     function Set-Types()
     {
-        Add-Type -AssemblyName System.ServiceModel
+        log "Enter Set-Types"
+        if ("ZLocation.IService" -as [type])
+        {
+            log "[ZLocation] Types already added"
+            return
+        }
+        $smaTime = Measure-Command { Add-Type -AssemblyName System.ServiceModel }
+        log "Add System.ServiceModel assembly in $($smaTime.TotalSeconds) sec"
         $csCode = cat (Join-Path $PSScriptRoot "service.cs") -Raw
-        Add-Type -ReferencedAssemblies System.ServiceModel -TypeDefinition $csCode
+        $serviceTime = Measure-Command { Add-Type -ReferencedAssemblies System.ServiceModel -TypeDefinition $csCode }
+        log "Compile and add ZLocation storage service in $($serviceTime.TotalSeconds) sec"
+    }
+
+    #
+    # Called only if Types are already populated
+    #
+    function Get-Binding()
+    {
+        if (-not (Test-Path variable:Script:binding)) {
+            log "Create new .NET pipe service binding"
+            $Script:binding = [System.ServiceModel.NetNamedPipeBinding]::new()
+            $Script:binding.OpenTimeout = [timespan]::MaxValue
+            $Script:binding.CloseTimeout = [timespan]::MaxValue
+            $Script:binding.ReceiveTimeout = [timespan]::MaxValue
+            $Script:binding.SendTimeout = [timespan]::MaxValue
+        }
+        return $Script:binding
     }
 
     #
@@ -29,15 +58,8 @@ function Get-ZService()
         if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
         {
             Set-Types
-            
-            $binding = [System.ServiceModel.NetNamedPipeBinding]::new()
-            $binding.OpenTimeout = [timespan]::MaxValue
-            $binding.CloseTimeout = [timespan]::MaxValue
-            $binding.ReceiveTimeout = [timespan]::MaxValue
-            $binding.SendTimeout = [timespan]::MaxValue
-            
             $pipeFactory = [System.ServiceModel.ChannelFactory[ZLocation.IService]]::new(
-                $binding, 
+                (Get-Binding), 
                 [System.ServiceModel.EndpointAddress]::new("$($baseAddress)/$($pipename)"))    
             $Script:pipeProxy = $pipeFactory.CreateChannel()
         }
@@ -51,7 +73,14 @@ function Get-ZService()
     {
         Set-Types
         $service = [System.ServiceModel.ServiceHost]::new([ZLocation.Service]::new($backupFilePath), [uri]($baseAddress))
-        $service.AddServiceEndpoint([ZLocation.IService], [System.ServiceModel.NetNamedPipeBinding]::new(), $pipename) > $null
+
+        # It will be usefull to add debugBehaviour, like this
+        # $debugBehaviour = $service.Description.Behaviors.Find[System.ServiceModel.Description.ServiceDebugBehavior]();
+        # $debugBehaviour = [System.ServiceModel.Description.ServiceDebugBehavior]::new()
+        # $debugBehaviour.IncludeExceptionDetailInFaults = $true
+        # $service.Description.Behaviors.Add($debugBehaviour);
+
+        $service.AddServiceEndpoint([ZLocation.IService], (Get-Binding), $pipename) > $null
         $service.Open() > $null
     }
 

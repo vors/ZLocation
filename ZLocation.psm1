@@ -19,6 +19,8 @@ function Update-ZLocation([string]$path)
     }
 }
 
+# this approach hurts `cd` performance (0.0008 sec vs 0.025 sec). 
+# Consider replace it with OnIdle Event.
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
 #
 # End of weight function logic.
@@ -30,7 +32,7 @@ function Update-ZLocation([string]$path)
 #
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
-    foreach ($key in ($hash.GetEnumerator().Name)) 
+    foreach ($key in ($hash.GetEnumerator() | %{$_.Name})) 
     {
         if (-not (Test-FuzzyMatch $key $query)) 
         {

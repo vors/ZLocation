@@ -61,6 +61,7 @@ namespace ZLocation
         public void Add(string path, double weight)
         {
             double oldWeight = 0;
+            path = path.ToLower();
             _data.TryGetValue(path, out oldWeight);
             _data[path] = oldWeight + weight;
             this.Backup();
