@@ -122,8 +122,12 @@ function Add-ZWeight([string]$path, [double]$weight) {
     $service.Add($path, $weight)
 }
 
-
 # init service
 # Get-ZService > $null
+
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+    #TODO add cleanup
+    Write-Warning "[ZLocation] currently cleanup logic is not implemented."
+}
 
 Export-ModuleMember -Function @("Get-ZLocation", "Add-ZWeight")
