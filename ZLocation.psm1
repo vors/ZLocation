@@ -54,7 +54,7 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
         return $true
     }
 
-    for ($i=0; $i -le $n-1; $i++)
+    for ($i=0; $i -lt $n-1; $i++)
     {
         if (-not ($path -match $query[$i]))
         {
@@ -62,6 +62,12 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
         }
     }   
     
+    # after tab expansion, we get desired full path as a last query element.
+    if ([System.IO.Path]::IsPathRooted($query[$n-1])) 
+    {
+        return $path -eq $query[$n-1]
+    }
+
     $leaf = Split-Path -Leaf $path
     return ($leaf -match $query[$n-1]) 
 }
@@ -81,6 +87,31 @@ function Set-ZLocation()
         Write-Warning "Cannot find matching location"
     }
 }
+
+
+#
+# Tab complention
+#
+if (Test-Path Function:\TabExpansion) {
+    Rename-Item Function:\TabExpansion PreZTabExpansion
+}
+
+function global:TabExpansion($line, $lastWord) {
+    switch -regex ($line) {
+        "^(Set-ZLocation|z) .*" {
+            $arguments = $line -split ' ' | Where { $_.length -gt 0 } | select -Skip 1
+            Find-Matches (Get-ZLocation) $arguments
+        }
+        default {
+            if (Test-Path Function:\PreZTabExpansion) {
+                PreZTabExpansion $line $lastWord
+            }
+        }
+    }
+}
+#
+# End of tab completion
+#
 
 Set-Alias -Name z -Value Set-ZLocation
 
