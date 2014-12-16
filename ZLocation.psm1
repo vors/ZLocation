@@ -47,6 +47,9 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
 
 function Test-FuzzyMatch([string]$path, [string[]]$query)
 {
+    if ($query -eq $null) {
+        return $true
+    }
     $n = $query.Length
     if ($n -eq 0)
     {
