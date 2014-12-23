@@ -37,11 +37,32 @@ if (Test-Path Function:\TabExpansion) {
     Rename-Item Function:\TabExpansion PreZTabExpansion
 }
 
+function Get-EscapedPath
+{
+    param( 
+    [Parameter(
+        Position=0, 
+        Mandatory=$true, 
+        ValueFromPipeline=$true,
+        ValueFromPipelineByPropertyName=$true)
+    ]
+    [string]$path
+    ) 
+
+    process {
+        if ($path.Contains(' '))
+        {
+            return '"' + $path + '"'
+        }
+        return $path
+    }
+}
+
 function global:TabExpansion($line, $lastWord) {
     switch -regex ($line) {
         "^(Set-ZLocation|z) .*" {
             $arguments = $line -split ' ' | Where { $_.length -gt 0 } | select -Skip 1
-            Find-Matches (Get-ZLocation) $arguments
+            Find-Matches (Get-ZLocation) $arguments | Get-EscapedPath
         }
         default {
             if (Test-Path Function:\PreZTabExpansion) {
