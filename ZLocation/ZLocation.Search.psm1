@@ -39,7 +39,16 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     # after tab expansion, we get desired full path as a last query element.
     if ([System.IO.Path]::IsPathRooted($query[$n-1])) 
     {
-        return $path -eq $query[$n-1]
+        $rootQuery = $query[$n-1]
+        if (($rootQuery.Length) -eq 2 -and ($rootQuery[-1] -eq ':'))
+        {
+            $rootQuery = $rootQuery + "\"
+        }
+        elseif ($rootQuery[-1] -eq '\')
+        {
+            $rootQuery = $rootQuery.Substring(0, $rootQuery.Length-1)
+        }
+        return $path -eq $rootQuery
     }
 
     $leaf = Split-Path -Leaf $path

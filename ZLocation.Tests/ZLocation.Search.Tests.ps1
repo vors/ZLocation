@@ -27,8 +27,16 @@ Describe "Find-Matches filters results correctly" {
             Find-Matches $data FoO1 | Should Be 'C:\foo1'
         }
 
-        It "should return disk root folder" {
+        It "returns disk root folder for C:" {
             Find-Matches $data C: | Should Be 'C:\'
+        }
+
+        It "returns disk root folder for C" {
+            Find-Matches $data C | Should Be 'C:\'
+        }
+
+        It "should ignore trailing \" {
+            Find-Matches $data C:\foo1\ | Should Be 'C:\foo1'
         }
     }
 }
