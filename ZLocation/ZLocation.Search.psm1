@@ -2,6 +2,7 @@ Set-StrictMode -Version Latest
 
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
+    $hash = $hash.Clone()
     foreach ($key in ($hash.GetEnumerator() | %{$_.Name})) 
     {
         if (-not (Test-FuzzyMatch $key $query)) 
@@ -44,3 +45,5 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     $leaf = Split-Path -Leaf $path
     return ($leaf -match $query[$n-1]) 
 }
+
+Export-ModuleMember -Function Find-Matches
