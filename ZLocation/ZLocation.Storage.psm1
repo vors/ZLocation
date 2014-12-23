@@ -2,7 +2,7 @@
 
 #
 # Return ready-to-use ZLocation.IService proxy.
-# Starts service side, if nessesary
+# Starts service server side, if nessesary
 #
 function Get-ZService()
 {
@@ -12,12 +12,13 @@ function Get-ZService()
 
     function log([string] $message)
     {
-         Write-Host -ForegroundColor Yellow "[ZLocation] $message"
+        # You can replace logs for development, i.e:
+        # Write-Host -ForegroundColor Yellow "[ZLocation] $message"
+        Write-Verbose "[ZLocation] $message"
     }
 
     #
     # Add nessesary types.
-    # Time consuming, don't run it too often.
     #
     function Set-Types()
     {
@@ -122,12 +123,8 @@ function Add-ZWeight([string]$path, [double]$weight) {
     $service.Add($path, $weight)
 }
 
-# init service
-# Get-ZService > $null
-
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    #TODO add cleanup
-    Write-Warning "[ZLocation] currently cleanup logic is not implemented."
+    Write-Warning "[ZLocation] module was removed, but service was not closed."
 }
 
 Export-ModuleMember -Function @("Get-ZLocation", "Add-ZWeight")
