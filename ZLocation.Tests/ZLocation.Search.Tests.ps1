@@ -38,5 +38,9 @@ Describe "Find-Matches filters results correctly" {
         It "should ignore trailing \" {
             Find-Matches $data C:\foo1\ | Should Be 'C:\foo1'
         }
+
+        It "this test should fails" {
+            1 | Should Be 2
+        }
     }
 }
