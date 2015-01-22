@@ -1,6 +1,5 @@
 install:
-  - ps: (new-object Net.WebClient).DownloadString("http://psget.net/GetPsGet.ps1") | iex
-  - ps: install-module pester
+  - cinst pester
 
 build: false
 
