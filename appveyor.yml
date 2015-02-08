@@ -11,6 +11,4 @@ test_script:
         # this is a hack, psake doesn't propagete exit code
         if ($psake.build_success -eq $false) { 
             exit 1 
-        } else { 
-            exit 0 
         }
