@@ -4,8 +4,9 @@ install:
 build: false
 
 test_script:
+  - psake AppveyorTest
   - ps: |
-        psake AppveyorTest
+        #psake AppveyorTest
         if ($psake.build_success -eq $false) { 
             exit 1 
         } else { 
