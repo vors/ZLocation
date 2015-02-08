@@ -1,14 +1,15 @@
 install:
   - cinst pester
+  - cinst psake
 
 build: false
 
 test_script:
   - ps: |
+        Import-Module psake
         Invoke-Psake AppveyorTest
         if ($psake.build_success -eq $false) { 
             exit 1 
         } else { 
             exit 0 
         }
-        
