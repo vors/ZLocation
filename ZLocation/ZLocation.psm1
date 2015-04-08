@@ -81,9 +81,18 @@ function Set-ZLocation()
         $args = @()
     }
     $matches = Find-Matches (Get-ZLocation) $args
-    if ($matches) {
-        Push-Location ($matches | Select-Object -First 1)
-    } else {
+    $pushDone = $false
+    $matches | % {
+        if (Test-path $_) {
+            Push-Location ($_)
+            $pushDone = $true
+            break
+        } else {
+            Write-Warning "There is no path $_ on the file system. Removing obsolete date from datebase."
+            Remove-ZLocation $_
+        }
+    } 
+    if (-not $pushDone) {
         Write-Warning "Cannot find matching location"
     }
 }

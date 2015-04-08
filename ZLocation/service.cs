@@ -14,6 +14,9 @@ namespace ZLocation
         void Add(string path, double weight);
 
         [OperationContract()]
+        void Remove(string path);
+
+        [OperationContract()]
         IEnumerable<KeyValuePair<string, double>> Get();
 
         [OperationContract()]
@@ -65,6 +68,13 @@ namespace ZLocation
             _data[path] = oldWeight + weight;
             this.Backup();
         }
+
+        public void Remove(string path)
+        {
+            double oldWeight = 0;
+            _data.TryRemove(path, out oldWeight);
+            this.Backup();
+        }        
 
         private void Backup()
         {
