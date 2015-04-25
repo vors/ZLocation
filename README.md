@@ -3,6 +3,8 @@
 ZLocation
 =========
 
+[![Join the chat at https://gitter.im/vors/ZLocation](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vors/ZLocation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ZLocation is the successor of [Jump-Location](https://github.com/tkellogg/Jump-Location).
 Like [z.sh](https://github.com/rupa/z) is a reimagined clone of [autojump](https://github.com/joelthelion/autojump), Zlocation is a reimagined clone of Jump-Location.
 
