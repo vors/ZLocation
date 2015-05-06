@@ -18,9 +18,8 @@ Describe 'ZLocation' {
                 $newDirFullPath = ($pwd).Path
                 # trigger weight update
                 prompt > $null
-                # go somewhere else
-                cd ~
-                $homeDirFullPath = ($pwd).Path
+                # go back
+                cd $curDirFullPath
                 
                 # do the jump
                 z ($newdirectory.Substring(0, 3))
@@ -28,7 +27,7 @@ Describe 'ZLocation' {
 
                 # verify that pop-location can be used after z
                 z -
-                ($pwd).Path | Should Be $homeDirFullPath
+                ($pwd).Path | Should Be $curDirFullPath
 
                 $h = Get-ZLocation
                 $h[$newDirFullPath] | Should Be 1
