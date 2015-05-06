@@ -50,7 +50,7 @@ function Get-ZService()
     {
         if (-not (Test-Path variable:Script:binding)) {
             log "Create new .NET pipe service binding"
-            $Script:binding = [System.ServiceModel.NetNamedPipeBinding]::new()
+            $Script:binding = New-Object -TypeName 'System.ServiceModel.NetNamedPipeBinding'
             $Script:binding.OpenTimeout = [timespan]::MaxValue
             $Script:binding.CloseTimeout = [timespan]::MaxValue
             $Script:binding.ReceiveTimeout = [timespan]::MaxValue
@@ -67,9 +67,9 @@ function Get-ZService()
         if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
         {
             Set-Types
-            $pipeFactory = [System.ServiceModel.ChannelFactory[ZLocation.IService]]::new(
-                (Get-Binding), 
-                [System.ServiceModel.EndpointAddress]::new( $baseAddress + '/' + (Get-ZLocationPipename) )
+            $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
+                (Get-Binding),        
+                ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
             )    
             $Script:pipeProxy = $pipeFactory.CreateChannel()
         }
@@ -82,7 +82,10 @@ function Get-ZService()
     function Start-ZService()
     {
         Set-Types
-        $service = [System.ServiceModel.ServiceHost]::new([ZLocation.Service]::new( (Get-ZLocationBackupFilePath) ), [uri]($baseAddress))
+        $service = New-Object 'System.ServiceModel.ServiceHost' -ArgumentList (
+            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ), 
+            [uri]($baseAddress)
+        )
 
         # It will be usefull to add debugBehaviour, like this
         # $debugBehaviour = $service.Description.Behaviors.Find[System.ServiceModel.Description.ServiceDebugBehavior]();

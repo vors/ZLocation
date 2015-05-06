@@ -43,7 +43,9 @@ Describe 'ZLocation' {
     }
 
     Context 'Pipe is broken' {
-        # TODO: I don't know how to intentianally break it to be honest.
+        $csCode = cat (Join-Path $PSScriptRoot "MockServiceProxy.cs") -Raw
+        Add-Type -TypeDefinition $csCode
+        
     }
 
 }
