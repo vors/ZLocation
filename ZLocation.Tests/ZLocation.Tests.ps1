@@ -31,8 +31,7 @@ Describe 'ZLocation' {
 
                 $h = Get-ZLocation
                 $h[$newDirFullPath] | Should Be 1
-            }
-            finally {
+            } finally {
                 cd $curDirFullPath
                 rm -rec -force $newdirectory
                 Remove-ZLocation $newDirFullPath
@@ -57,6 +56,17 @@ Describe 'ZLocation' {
             # because of mock, our proxy would be broken all the time
             z foo
             Assert-VerifiableMocks
+        }
+
+        It 'should not block user from cd around' {
+            try {
+                $curDirFullPath = ($pwd).Path
+                cd 'c:\'
+                ($pwd).Path | Should Be 'C:\'
+            } finally {
+                cd $curDirFullPath
+                ($pwd).Path | Should Be $curDirFullPath
+            }
         }
     }
 

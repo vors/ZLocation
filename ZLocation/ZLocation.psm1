@@ -135,7 +135,7 @@ function Set-ZLocation()
             $pushDone = $true
             break
         } else {
-            Write-Warning "There is no path $_ on the file system. Removing obsolete date from datebase."
+            Write-Warning "There is no path $match on the file system. Removing obsolete date from datebase."
             Remove-ZLocation $match
         }
     } 

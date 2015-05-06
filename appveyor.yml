@@ -1,3 +1,5 @@
+version: 0.1.0.{build}
+
 install:
   - cinst pester
   - git clone https://github.com/psake/psake
