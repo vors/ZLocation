@@ -1,4 +1,4 @@
-﻿Set-StrictMode -Version Latest
+Set-StrictMode -Version Latest
 
 # Listing nested modules in .psd1 create additional scopes so pester cannot moke cmdlets in them.
 # We use direct Import-Module instead.
