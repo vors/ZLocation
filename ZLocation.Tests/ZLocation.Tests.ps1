@@ -52,8 +52,12 @@ Describe 'ZLocation' {
             return (New-Object 'ZLocation.MockServiceProxy')
         }
 
+        Mock -ModuleName ZLocation.Storage Fail-Gracefully {} -Verifiable 
+
         It 'should fail gracefully' {
+            # because of mock, our proxy would be broken all the time
             z foo
+            Assert-VerifiableMocks
         }
     }
 

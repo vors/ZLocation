@@ -1,5 +1,7 @@
 ﻿Set-StrictMode -Version Latest
 
+$script:alreadyFailed = $false
+
 function Get-ZLocationBackupFilePath
 {
     return (Join-Path $env:HOMEDRIVE (Join-Path $env:HOMEPATH 'z-location.txt'))
@@ -34,6 +36,9 @@ function Get-ZServiceProxy
 #
 # Return ready-to-use ZLocation.IService proxy.
 # Starts service server side, if nessesary
+# There is an issue https://github.com/vors/ZLocation/issues/1
+# We still cannot garante 100% availability.
+# We want to fail gracefully, and print warning.
 #
 function Get-ZService()
 {
@@ -103,6 +108,8 @@ function Get-ZService()
 
     $service = Get-ZServiceProxy
     $retryCount = 0
+    
+    # This while loop is horible, sorry future me.
     while ($true) 
     {
         $retryCount++
@@ -113,35 +120,70 @@ function Get-ZService()
             if ($retryCount -gt 1)
             {
                 Write-Error "Cannot connect to a storage service. $_"
-                break;
+                return $null;
             }
-            Start-ZService
-            $service = Get-ZServiceProxy -Force
+            try
+            {
+                Start-ZService
+                $service = Get-ZServiceProxy -Force
+            } catch {
+                # This is the codepath that cause rear problems with broken pipe (https://github.com/vors/ZLocation/issues/1)
+                return $null
+            }
+            
         }
     }
 
-    $service
+    return $service
+}
+
+function Fail-Gracefully
+{
+    if (-not $script:alreadyFailed) {
+        Write-Warning @'
+ZLocation Pipe become broken :( ZLocation is now self-disabled. 
+You need to restart all PowerShell instances to re-enable ZLocation.
+Please continue your work and do it, when convinient.
+You can report the problem on https://github.com/vors/ZLocation/issues
+'@
+        $script:alreadyFailed = $true
+    }
 }
 
 function Get-ZLocation()
 {
     $service = Get-ZService
     $hash = @{}
-    foreach ($item in $service.Get()) 
+    if ($service) 
     {
-        $hash.add($item.Key, $item.Value)
-    }    
+        foreach ($item in $service.Get()) 
+        {
+            $hash.add($item.Key, $item.Value)
+        }    
+    } else {
+        Fail-Gracefully
+    }
     return $hash
 }
 
 function Add-ZWeight([string]$path, [double]$weight) {
     $service = Get-ZService
-    $service.Add($path, $weight)
+    if ($service)
+    {
+        $service.Add($path, $weight)
+    } else {
+        Fail-Gracefully    
+    }
 }
 
 function Remove-ZLocation([string]$path) {
     $service = Get-ZService
-    $service.Remove($path)
+    if ($service) 
+    {
+        $service.Remove($path)
+    } else {
+        Fail-Gracefully
+    }
 }
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
