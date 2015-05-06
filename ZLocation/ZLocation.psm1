@@ -129,6 +129,6 @@ function Set-ZLocation()
 Register-PromptHook
 
 Set-Alias -Name z -Value Set-ZLocation
-Export-ModuleMember -Function Set-ZLocation, Get-ZLocation -Alias z
+Export-ModuleMember -Function Set-ZLocation, Get-ZLocation, Remove-ZLocation -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation

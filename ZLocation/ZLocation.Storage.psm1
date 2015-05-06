@@ -1,5 +1,15 @@
 ﻿Set-StrictMode -Version Latest
 
+function Get-ZLocationBackupFilePath
+{
+    return (Join-Path $env:HOMEDRIVE (Join-Path $env:HOMEPATH 'z-location.txt'))
+}
+
+function Get-ZLocationPipename
+{
+    return 'zlocation'
+}
+
 #
 # Return ready-to-use ZLocation.IService proxy.
 # Starts service server side, if nessesary
@@ -7,8 +17,6 @@
 function Get-ZService()
 {
     $baseAddress = "net.pipe://localhost"
-    $pipename = "zlocation"
-    $backupFilePath = Join-Path $env:HOMEDRIVE (Join-Path $env:HOMEPATH "z-location.txt")
 
     function log([string] $message)
     {
@@ -61,7 +69,8 @@ function Get-ZService()
             Set-Types
             $pipeFactory = [System.ServiceModel.ChannelFactory[ZLocation.IService]]::new(
                 (Get-Binding), 
-                [System.ServiceModel.EndpointAddress]::new("$($baseAddress)/$($pipename)"))    
+                [System.ServiceModel.EndpointAddress]::new( $baseAddress + '/' + (Get-ZLocationPipename) )
+            )    
             $Script:pipeProxy = $pipeFactory.CreateChannel()
         }
         $Script:pipeProxy
@@ -73,7 +82,7 @@ function Get-ZService()
     function Start-ZService()
     {
         Set-Types
-        $service = [System.ServiceModel.ServiceHost]::new([ZLocation.Service]::new($backupFilePath), [uri]($baseAddress))
+        $service = [System.ServiceModel.ServiceHost]::new([ZLocation.Service]::new( (Get-ZLocationBackupFilePath) ), [uri]($baseAddress))
 
         # It will be usefull to add debugBehaviour, like this
         # $debugBehaviour = $service.Description.Behaviors.Find[System.ServiceModel.Description.ServiceDebugBehavior]();
@@ -81,7 +90,7 @@ function Get-ZService()
         # $debugBehaviour.IncludeExceptionDetailInFaults = $true
         # $service.Description.Behaviors.Add($debugBehaviour);
 
-        $service.AddServiceEndpoint([ZLocation.IService], (Get-Binding), $pipename) > $null
+        $service.AddServiceEndpoint([ZLocation.IService], (Get-Binding), (Get-ZLocationPipename) ) > $null
         $service.Open() > $null
     }
 
