@@ -32,11 +32,19 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 *  Customizable matching algorithm and weight function.
 
 ##Install
-Module has not been published yet, but you can clone dev version from this repo.
-The plan is to publish it on [PsGet](http://psget.net/) gallery.
-
-Put something similar to your `$profile` file.
+Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/ZLocation/)
 ```powershell
-Import-Module C:\dev\ZLocation\ZLocation
-Write-Host -Fore Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
+Find-Module ZLocation | Install-Module
+```
+
+Make sure to **include ZLocation import in your `$profile`**.
+It intentianally doesn't alternate `$profile` automatically on installation.
+
+```powershell
+Import-Module ZLocation
+```
+
+If you want to display some additional information about ZLocation on startup, you can put this snippet in `$profile` after import. 
+```powershell
+Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
