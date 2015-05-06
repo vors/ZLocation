@@ -1,5 +1,9 @@
 ﻿Set-StrictMode -Version Latest
 
+# I currently consider number of commands executed in directory a better metric, then total time spent in directory.
+# See [corresponding issue](https://github.com/vors/ZLocation/issues/6) for details.
+# If you prefer old behavior, uncomment this code.
+<#
 #
 # Weight function.
 #
@@ -25,6 +29,29 @@ function Update-ZLocation([string]$path)
 # this approach hurts `cd` performance (0.0008 sec vs 0.025 sec). 
 # Consider replace it with OnIdle Event.
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
+#>
+
+function Update-ZLocation([string]$path)
+{
+    Add-ZWeight $path 1.0
+}
+
+function Register-PromptHook
+{
+    param()
+
+    $oldPrompt = Get-Content function:\prompt
+    if( $oldPrompt -notlike '*Update-ZLocation*' )
+    {
+        $newPrompt = @'
+Update-ZLocation $pwd
+
+'@
+        $newPrompt += $oldPrompt
+        $function:prompt = [ScriptBlock]::Create($newPrompt)
+    }
+}
+
 #
 # End of weight function.
 #
@@ -77,6 +104,8 @@ function global:TabExpansion($line, $lastWord) {
 
 function Set-ZLocation()
 {
+    Register-PromptHook
+
     if (-not $args) {
         $args = @()
     }
@@ -97,6 +126,9 @@ function Set-ZLocation()
     }
 }
 
+Register-PromptHook
 
 Set-Alias -Name z -Value Set-ZLocation
 Export-ModuleMember -Function Set-ZLocation, Get-ZLocation -Alias z
+# export this function to make it accessible from prompt
+Export-ModuleMember -Function Update-ZLocation
