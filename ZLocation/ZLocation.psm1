@@ -102,6 +102,12 @@ function global:TabExpansion($line, $lastWord) {
 # End of tab completion.
 #
 
+# Default location stack is local for module. Users cannot use 'Pop-Location' directly, so we need to provide a command inside the module for that.
+function Pop-ZLocation
+{
+    Pop-Location
+}
+
 function Set-ZLocation()
 {
     Register-PromptHook
@@ -109,16 +115,23 @@ function Set-ZLocation()
     if (-not $args) {
         $args = @()
     }
+
+    # Special case to enable Pop-Location.
+    if (($args.Count -eq 1) -and ($args[0] -eq '-')) {
+        Pop-ZLocation
+        return
+    }
+
     $matches = Find-Matches (Get-ZLocation) $args
     $pushDone = $false
-    $matches | % {
-        if (Test-path $_) {
-            Push-Location ($_)
+    foreach ($match in $matches) {
+        if (Test-path $match) {
+            Push-Location $match
             $pushDone = $true
             break
         } else {
             Write-Warning "There is no path $_ on the file system. Removing obsolete date from datebase."
-            Remove-ZLocation $_
+            Remove-ZLocation $match
         }
     } 
     if (-not $pushDone) {
@@ -129,6 +142,6 @@ function Set-ZLocation()
 Register-PromptHook
 
 Set-Alias -Name z -Value Set-ZLocation
-Export-ModuleMember -Function Set-ZLocation, Get-ZLocation, Remove-ZLocation -Alias z
+Export-ModuleMember -Function @('Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation
