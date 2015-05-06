@@ -11,6 +11,27 @@ function Get-ZLocationPipename
 }
 
 #
+# Return cached proxy, or create a new one, if -Force
+#
+function Get-ZServiceProxy
+{
+    param(
+        [switch]$Force
+    )
+
+    if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
+    {
+        Set-Types
+        $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
+            (Get-Binding),        
+            ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
+        )    
+        $Script:pipeProxy = $pipeFactory.CreateChannel()
+    }
+    $Script:pipeProxy
+}
+
+#
 # Return ready-to-use ZLocation.IService proxy.
 # Starts service server side, if nessesary
 #
@@ -57,23 +78,6 @@ function Get-ZService()
             $Script:binding.SendTimeout = [timespan]::MaxValue
         }
         return $Script:binding
-    }
-
-    #
-    # Return cached proxy, or create a new one, if -Force
-    #
-    function Get-ZServiceProxy([switch]$Force)
-    {
-        if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
-        {
-            Set-Types
-            $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
-                (Get-Binding),        
-                ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
-            )    
-            $Script:pipeProxy = $pipeFactory.CreateChannel()
-        }
-        $Script:pipeProxy
     }
 
     #

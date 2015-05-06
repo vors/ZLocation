@@ -1,5 +1,10 @@
 ﻿Set-StrictMode -Version Latest
 
+# Listing nested modules in .psd1 create additional scopes so pester cannot moke cmdlets in them.
+# We use direct Import-Module instead.
+Import-Module "$PSScriptRoot\ZLocation.Search.psm1"
+Import-Module "$PSScriptRoot\ZLocation.Storage.psm1"
+
 # I currently consider number of commands executed in directory a better metric, then total time spent in directory.
 # See [corresponding issue](https://github.com/vors/ZLocation/issues/6) for details.
 # If you prefer old behavior, uncomment this code.

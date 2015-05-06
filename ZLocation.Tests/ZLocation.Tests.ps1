@@ -1,9 +1,8 @@
 # This is integration tests.
 
 # -Force re-import nested modules as well
-Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
-Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
-# Import .psm1, not .psd1 to avoid creating a separate scope for nested modules and allow mocking
+#Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
+#Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.psm1 -Force
 
 Describe 'ZLocation' {
@@ -46,6 +45,16 @@ Describe 'ZLocation' {
         $csCode = cat (Join-Path $PSScriptRoot "MockServiceProxy.cs") -Raw
         Add-Type -TypeDefinition $csCode
         
+        Mock -ModuleName ZLocation.Storage Get-ZServiceProxy {
+            param(
+                [switch]$Force
+            )
+            return (New-Object 'ZLocation.MockServiceProxy')
+        }
+
+        It 'should fail gracefully' {
+            z foo
+        }
     }
 
 }
