@@ -39,9 +39,10 @@ Find-Module ZLocation | Install-Module
 
 Make sure to **include ZLocation import in your `$profile`**.
 It intentianally doesn't alternate `$profile` automatically on installation.
+You can use one-liner:
 
 ```powershell
-Import-Module ZLocation
+Find-Module ZLocation | Install-Module; 'Import-Module ZLocation' >> $profile
 ```
 
 If you want to display some additional information about ZLocation on startup, you can put this snippet in `$profile` after import. 
