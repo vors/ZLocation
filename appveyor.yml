@@ -8,7 +8,7 @@ build: false
 
 test_script:
   - ps: |
-        Import-Module C:\projects\Invoke-PSake
+        Import-Module C:\projects\psake
         Invoke-PSake AppveyorTest
         # this is a hack, psake doesn't propagete exit code
         if ($psake.build_success -eq $false) { 
