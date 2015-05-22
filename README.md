@@ -5,6 +5,10 @@ ZLocation
 
 [![Join the chat at https://gitter.im/vors/ZLocation](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vors/ZLocation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+Tracks your most used directories, based on number of runned commands.
+After  a  short  learning  phase, z will take you to the most popular directory that matches ALL of the regexes given on the command line, in order.
+You can use **Tab-Completion / Intellisense** to pick not-a-top directories.
+
 ZLocation is the successor of [Jump-Location](https://github.com/tkellogg/Jump-Location).
 Like [z.sh](https://github.com/rupa/z) is a reimagined clone of [autojump](https://github.com/joelthelion/autojump), Zlocation is a reimagined clone of Jump-Location.
 
