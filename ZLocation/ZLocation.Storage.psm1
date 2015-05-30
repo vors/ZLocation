@@ -35,9 +35,9 @@ function Get-ZServiceProxy
 
 #
 # Return ready-to-use ZLocation.IService proxy.
-# Starts service server side, if nessesary
+# Starts service server side, if necessary
 # There is an issue https://github.com/vors/ZLocation/issues/1
-# We still cannot garante 100% availability.
+# We still cannot guarantee 100% availability.
 # We want to fail gracefully, and print warning.
 #
 function Get-ZService()
@@ -109,7 +109,7 @@ function Get-ZService()
     $service = Get-ZServiceProxy
     $retryCount = 0
     
-    # This while loop is horible, sorry future me.
+    # This while loop is horrible, sorry future me.
     while ($true) 
     {
         $retryCount++
