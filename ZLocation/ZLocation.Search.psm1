@@ -41,8 +41,8 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     }   
     
     # after tab expansion, we get desired full path as a last query element.
-    # tab expansion can come from our code, then it will represend the full path.
-    # It also can come from the standart tab expension (when our doesn't return anything), which is file system based. 
+    # tab expansion can come from our code, then it will represent the full path.
+    # It also can come from the standard tab expansion (when our doesn't return anything), which is file system based. 
     # It can produce relative paths.
 
     $rootQuery = $query[$n-1]
