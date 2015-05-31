@@ -51,3 +51,10 @@ If you want to display some additional information about ZLocation on start-up, 
 ```powershell
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
+
+## Develop
+
+### Run tests
+
+Install [Pester](https://github.com/pester/Pester).
+Run `Invoke-Pester` from the root folder.
