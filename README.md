@@ -5,18 +5,18 @@ ZLocation
 
 [![Join the chat at https://gitter.im/vors/ZLocation](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vors/ZLocation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Tracks your most used directories, based on number of runned commands.
-After  a  short  learning  phase, z will take you to the most popular directory that matches ALL of the regexes given on the command line, in order.
-You can use **Tab-Completion / Intellisense** to pick not-a-top directories.
+Tracks your most used directories, based on number of previously run commands.
+After  a  short  learning  phase, z will take you to the most popular directory that matches ALL of the regular expressions given on the command line, in order.
+You can use **Tab-Completion / Intellisense** to pick directories that are not the first choice.
 
 ZLocation is the successor of [Jump-Location](https://github.com/tkellogg/Jump-Location).
 Like [z.sh](https://github.com/rupa/z) is a reimagined clone of [autojump](https://github.com/joelthelion/autojump), Zlocation is a reimagined clone of Jump-Location.
 
-If you have an expirience with autojump, j.sh, z.sh or Jump-Location, you will understand concepts immidiatly.
+If you have an experience with autojump, j.sh, z.sh or Jump-Location, you will understand concepts immediately.
 
 ##Usage
 
-ZLocation keep track of your `$pwd` (current folder).
+ZLocation keeps track of your `$pwd` (current folder).
 Once visited, folder become known to ZLocation.
 You can `cd` with just a hint of the path!
 
@@ -32,7 +32,7 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 ```
 
 ##Goals / Key features
-*  Support for mutliple PS sessions.
+*  Support for multiple PS sessions.
 *  Customizable matching algorithm and weight function.
 
 ##Install
@@ -42,14 +42,14 @@ Find-Module ZLocation | Install-Module
 ```
 
 Make sure to **include ZLocation import in your `$profile`**.
-It intentianally doesn't alternate `$profile` automatically on installation.
+It intentionally doesn't alternate `$profile` automatically on installation.
 You can use one-liner:
 
 ```powershell
 Find-Module ZLocation | Install-Module; 'Import-Module ZLocation' >> $profile
 ```
 
-If you want to display some additional information about ZLocation on startup, you can put this snippet in `$profile` after import. 
+If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$profile` after import. 
 ```powershell
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
