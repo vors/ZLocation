@@ -1,6 +1,7 @@
 Set-StrictMode -Version Latest
 
 $script:alreadyFailed = $false
+$baseAddress = "net.pipe://localhost"
 
 function Get-ZLocationBackupFilePath
 {
@@ -42,8 +43,6 @@ function Get-ZServiceProxy
 #
 function Get-ZService()
 {
-    $baseAddress = "net.pipe://localhost"
-
     function log([string] $message)
     {
         # You can replace logs for development, i.e:
