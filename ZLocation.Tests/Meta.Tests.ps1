@@ -28,7 +28,7 @@ Describe 'Text files formatting' {
             $totalTabsCount = 0
             $allTextFiles | %{
                 $fileName = $_.FullName
-                $tabStrings = (cat $_.FullName -Raw) | Select-String "`t" | % {
+                cat $_.FullName -Raw | Select-String "`t" | % {
                     Write-Warning "There are tab in $fileName"
                     $totalTabsCount++
                 }
