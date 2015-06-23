@@ -74,7 +74,7 @@ namespace ZLocation
             double oldWeight = 0;
             _data.TryRemove(path, out oldWeight);
             this.Backup();
-        }        
+        }
 
         private void Backup()
         {

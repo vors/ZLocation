@@ -3,9 +3,9 @@ Set-StrictMode -Version Latest
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
     $hash = $hash.Clone()
-    foreach ($key in ($hash.GetEnumerator() | %{$_.Name})) 
+    foreach ($key in ($hash.GetEnumerator() | %{$_.Name}))
     {
-        if (-not (Test-FuzzyMatch $key $query)) 
+        if (-not (Test-FuzzyMatch $key $query))
         {
             $hash.Remove($key)
         }
@@ -38,11 +38,11 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
         {
             return $false
         }
-    }   
-    
+    }
+
     # after tab expansion, we get desired full path as a last query element.
-    # tab expansion can come from our code, then it will represend the full path.
-    # It also can come from the standart tab expension (when our doesn't return anything), which is file system based. 
+    # tab expansion can come from our code, then it will represent the full path.
+    # It also can come from the standard tab expansion (when our function doesn't return anything), which is file system based.
     # It can produce relative paths.
 
     $rootQuery = $query[$n-1]
@@ -54,8 +54,8 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
             $rootQuery = (Resolve-Path $rootQueryCandidate).Path
         }
     }
-    
-    if ([System.IO.Path]::IsPathRooted($rootQuery)) 
+
+    if ([System.IO.Path]::IsPathRooted($rootQuery))
     {
         # doing a tweak to handle 'C:' and 'C:\' cases correctly.
         if (($rootQuery.Length) -eq 2 -and ($rootQuery[-1] -eq ':'))
@@ -71,7 +71,7 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     }
 
     $leaf = Split-Path -Leaf $path
-    return (contains -left $leaf -right $query[$n-1]) 
+    return (contains -left $leaf -right $query[$n-1])
 }
 
 Export-ModuleMember -Function Find-Matches

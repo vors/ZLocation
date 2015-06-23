@@ -63,7 +63,7 @@ Description = 'ZLocation is the new Jump-Location. A `cd` that learns.'
 # FormatsToProcess = @()
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-# This create additional scopes so pester cannot moke cmdlets in them. We use direct Import-Module in Zlocation.psm1 instead.
+# This create additional scopes so pester cannot make cmdlets in them. We use direct Import-Module in Zlocation.psm1 instead.
 # NestedModules = @("ZLocation.Storage.psm1", "ZLocation.Search.psm1")
 
 # Functions to export from this module

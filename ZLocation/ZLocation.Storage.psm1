@@ -26,9 +26,9 @@ function Get-ZServiceProxy
     {
         Set-Types
         $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
-            (Get-Binding),        
+            (Get-Binding),
             ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
-        )    
+        )
         $Script:pipeProxy = $pipeFactory.CreateChannel()
     }
     $Script:pipeProxy
@@ -36,9 +36,9 @@ function Get-ZServiceProxy
 
 #
 # Return ready-to-use ZLocation.IService proxy.
-# Starts service server side, if nessesary
+# Starts service server side, if necessary
 # There is an issue https://github.com/vors/ZLocation/issues/1
-# We still cannot garante 100% availability.
+# We still cannot guarantee 100% availability.
 # We want to fail gracefully, and print warning.
 #
 function Get-ZService()
@@ -51,7 +51,7 @@ function Get-ZService()
     }
 
     #
-    # Add nessesary types.
+    # Add necessary types.
     #
     function Set-Types()
     {
@@ -84,14 +84,11 @@ function Get-ZService()
         return $Script:binding
     }
 
-    #
-    # 
-    #
     function Start-ZService()
     {
         Set-Types
         $service = New-Object 'System.ServiceModel.ServiceHost' -ArgumentList (
-            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ), 
+            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ),
             [uri]($baseAddress)
         )
 
@@ -107,9 +104,9 @@ function Get-ZService()
 
     $service = Get-ZServiceProxy
     $retryCount = 0
-    
-    # This while loop is horible, sorry future me.
-    while ($true) 
+
+    # This while loop is horrible, sorry future me.
+    while ($true)
     {
         $retryCount++
         try {
@@ -129,7 +126,6 @@ function Get-ZService()
                 # This is the codepath that cause rear problems with broken pipe (https://github.com/vors/ZLocation/issues/1)
                 return $null
             }
-            
         }
     }
 
@@ -140,7 +136,7 @@ function Fail-Gracefully
 {
     if (-not $script:alreadyFailed) {
         Write-Warning @'
-ZLocation Pipe become broken :( ZLocation is now self-disabled. 
+ZLocation Pipe become broken :( ZLocation is now self-disabled.
 You need to restart all PowerShell instances to re-enable ZLocation.
 Please continue your work and do it, when convinient.
 You can report the problem on https://github.com/vors/ZLocation/issues
@@ -153,12 +149,12 @@ function Get-ZLocation()
 {
     $service = Get-ZService
     $hash = @{}
-    if ($service) 
+    if ($service)
     {
-        foreach ($item in $service.Get()) 
+        foreach ($item in $service.Get())
         {
             $hash.add($item.Key, $item.Value)
-        }    
+        }
     } else {
         Fail-Gracefully
     }
@@ -171,13 +167,13 @@ function Add-ZWeight([string]$path, [double]$weight) {
     {
         $service.Add($path, $weight)
     } else {
-        Fail-Gracefully    
+        Fail-Gracefully
     }
 }
 
 function Remove-ZLocation([string]$path) {
     $service = Get-ZService
-    if ($service) 
+    if ($service)
     {
         $service.Remove($path)
     } else {
