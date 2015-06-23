@@ -4,9 +4,9 @@ Set-StrictMode -Version latest
 $RepoRoot = (Resolve-Path $PSScriptRoot\..).Path
 
 Describe 'Text files formatting' {
-    
+
     $allTextFiles = ls -File -Recurse $RepoRoot
-    
+
     Context 'Files encoding' {
 
         It "Doesn't use Unicode encoding" {
@@ -45,7 +45,7 @@ Describe 'Version consistency' {
         $ymlVersionLine = cat $RepoRoot\appveyor.yml | ? {$_ -like 'version: *'} | Select -first 1
         # i.e. $ymlVersionLine = 'version: 1.7.0.{build}'
         $ymlVersionLine | Should Not BeNullOrEmpty
-        
+
         $manifest = (cat $RepoRoot\ZLocation\ZLocation.psd1 -Raw) | iex
         "version: $($manifest.ModuleVersion).{build}" | Should be $ymlVersionLine
     }
