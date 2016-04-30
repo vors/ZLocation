@@ -44,7 +44,7 @@ It intentionally doesn't alternate `$profile` automatically on installation.
 You can use one-liner:
 
 ```powershell
-Find-Module ZLocation | Install-Module; 'Import-Module ZLocation' >> $profile
+Find-Module ZLocation | Install-Module; "`nImport-Module ZLocation`n" >> $profile
 ```
 
 If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$profile` after import. 
