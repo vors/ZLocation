@@ -36,15 +36,16 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 ##Install
 Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/ZLocation/)
 ```powershell
-Find-Module ZLocation | Install-Module
+Install-Module ZLocation -Scopre CurrentUser
 ```
 
 Make sure to **include ZLocation import in your `$profile`**.
 It intentionally doesn't alternate `$profile` automatically on installation.
-You can use one-liner:
+
+This one-liner installs ZLocation, imports it and adds it to a profile.
 
 ```powershell
-Find-Module ZLocation | Install-Module; "`nImport-Module ZLocation`n" >> $profile
+Install-Module ZLocation -Scope CurrentUser; Import-Module ZLocation; "`r`n`r`nImport-Module ZLocation`r`n" >> $profile.CurrentUserAllHosts
 ```
 
 If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$profile` after import. 
