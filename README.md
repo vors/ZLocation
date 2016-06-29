@@ -36,7 +36,7 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 ##Install
 Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/ZLocation/)
 ```powershell
-Install-Module ZLocation -Scopre CurrentUser
+Install-Module ZLocation -Scope CurrentUser
 ```
 
 Make sure to **include ZLocation import in your `$profile`**.
