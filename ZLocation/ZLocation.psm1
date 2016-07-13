@@ -1,13 +1,13 @@
 Set-StrictMode -Version Latest
 
-# Listing nested modules in .psd1 create additional scopes so pester cannot moke cmdlets in them.
-# We use direct Import-Module instead.
+# Listing nested modules in .psd1 creates additional scopes and Pester cannot mock cmdlets in those scopes.
+# Instead we import them here which works.
 Import-Module "$PSScriptRoot\ZLocation.Search.psm1"
 Import-Module "$PSScriptRoot\ZLocation.Storage.psm1"
 
-# I currently consider number of commands executed in directory a better metric, then total time spent in directory.
+# I currently consider number of commands executed in directory to be a better metric, than total time spent in a directory.
 # See [corresponding issue](https://github.com/vors/ZLocation/issues/6) for details.
-# If you prefer old behavior, uncomment this code.
+# If you prefer the old behavior, uncomment this code.
 <#
 #
 # Weight function.
@@ -27,12 +27,12 @@ function Update-ZLocation([string]$path)
         Time = [datetime]::Now
     }
 
-    # populate folder immidiatly after the first cd
+    # populate folder immediately after the first cd
     Add-ZWeight $path 0
 }
 
 # this approach hurts `cd` performance (0.0008 sec vs 0.025 sec). 
-# Consider replace it with OnIdle Event.
+# Consider replacing it with OnIdle Event.
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
 #>
 
@@ -63,7 +63,7 @@ Update-ZLocation $pwd
 
 
 #
-# Tab complention.
+# Tab completion.
 #
 if (Test-Path Function:\TabExpansion) {
     Rename-Item Function:\TabExpansion PreZTabExpansion
