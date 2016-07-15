@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-# Listing nested modules in .psd1 create additional scopes so pester cannot moke cmdlets in them.
+# Listing nested modules in .psd1 create additional scopes so pester cannot make cmdlets in them.
 # We use direct Import-Module instead.
 Import-Module "$PSScriptRoot\ZLocation.Search.psm1"
 Import-Module "$PSScriptRoot\ZLocation.Storage.psm1"
@@ -19,7 +19,7 @@ function Update-ZLocation([string]$path)
     {
         $prev = $global:__zlocation_current
         $weight = $now.Subtract($prev.Time).TotalSeconds
-        Add-ZWeight ($prev.Location) $weight 
+        Add-ZWeight ($prev.Location) $weight
     }
 
     $global:__zlocation_current = @{
@@ -27,11 +27,11 @@ function Update-ZLocation([string]$path)
         Time = [datetime]::Now
     }
 
-    # populate folder immidiatly after the first cd
+    # populate folder immediately after the first cd
     Add-ZWeight $path 0
 }
 
-# this approach hurts `cd` performance (0.0008 sec vs 0.025 sec). 
+# this approach hurts `cd` performance (0.0008 sec vs 0.025 sec).
 # Consider replace it with OnIdle Event.
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
 #>
@@ -71,15 +71,15 @@ if (Test-Path Function:\TabExpansion) {
 
 function Get-EscapedPath
 {
-    param( 
+    param(
     [Parameter(
-        Position=0, 
-        Mandatory=$true, 
+        Position=0,
+        Mandatory=$true,
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)
     ]
     [string]$path
-    ) 
+    )
 
     process {
         if ($path.Contains(' '))
@@ -138,7 +138,7 @@ function Set-ZLocation()
             Write-Warning "There is no path $match on the file system. Removing obsolete data from database."
             Remove-ZLocation $match
         }
-    } 
+    }
     if (-not $pushDone) {
         Write-Warning "Cannot find matching location"
     }
