@@ -36,9 +36,9 @@ function Get-ZServiceProxy
 
 #
 # Return ready-to-use ZLocation.IService proxy.
-# Starts service server side, if nessesary
+# Starts service server side, if necessary
 # There is an issue https://github.com/vors/ZLocation/issues/1
-# We still cannot garante 100% availability.
+# We still cannot guarantee 100% availability.
 # We want to fail gracefully, and print warning.
 #
 function Get-ZService()
@@ -51,7 +51,7 @@ function Get-ZService()
     }
 
     #
-    # Add nessesary types.
+    # Add necessary types.
     #
     function Set-Types()
     {
@@ -95,7 +95,7 @@ function Get-ZService()
             [uri]($baseAddress)
         )
 
-        # It will be usefull to add debugBehaviour, like this
+        # It would be useful to add debugBehaviour, like this
         # $debugBehaviour = $service.Description.Behaviors.Find[System.ServiceModel.Description.ServiceDebugBehavior]();
         # $debugBehaviour = [System.ServiceModel.Description.ServiceDebugBehavior]::new()
         # $debugBehaviour.IncludeExceptionDetailInFaults = $true
@@ -108,7 +108,7 @@ function Get-ZService()
     $service = Get-ZServiceProxy
     $retryCount = 0
     
-    # This while loop is horible, sorry future me.
+    # This while loop is horrible, sorry future me.
     while ($true) 
     {
         $retryCount++
@@ -126,7 +126,7 @@ function Get-ZService()
                 Start-ZService
                 $service = Get-ZServiceProxy -Force
             } catch {
-                # This is the codepath that cause rear problems with broken pipe (https://github.com/vors/ZLocation/issues/1)
+                # This is the codepath that causes rear problems with broken pipe (https://github.com/vors/ZLocation/issues/1)
                 return $null
             }
             
