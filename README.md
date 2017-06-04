@@ -12,7 +12,8 @@ You can use **Tab-Completion / Intellisense** to pick directories that are not t
 ZLocation is the successor of [Jump-Location](https://github.com/tkellogg/Jump-Location).
 Like [z.sh](https://github.com/rupa/z) is a reimagined clone of [autojump](https://github.com/joelthelion/autojump), Zlocation is a reimagined clone of Jump-Location.
 
-##Usage
+Usage
+-----
 
 ZLocation keeps track of your `$pwd` (current folder).
 Once visited, folder become known to ZLocation.
@@ -29,7 +30,9 @@ PS C:\dev\azure-sdk-tools\src\ServiceManagement\Compute\Commands.ServiceManageme
 PS C:\dev\ZLocation\ZLocation.Tests>
 ```
 
-##Goals / Key features
+Goals / Key features
+--------------------
+
 *  Support for multiple PS sessions.
 *  Customizable matching algorithm and weight function.
 
@@ -53,7 +56,8 @@ If you want to display some additional information about ZLocation on start-up, 
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
-## Develop
+Develop
+-------
 
 ### Run tests
 
