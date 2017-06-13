@@ -241,7 +241,9 @@ namespace ZLocation {
      */
     public class PowerShellInvoker {
         public PowerShellInvoker() {
-            pool = RunspaceFactory.CreateRunspacePool(1, 1);
+            pool = RunspaceFactory.CreateRunspacePool(InitialSessionState.CreateDefault());
+            pool.SetMinRunspaces(1);
+            pool.SetMaxRunspaces(1);
 #if WINDOWS
             pool.ApartmentState = ApartmentState.STA;
 #endif
