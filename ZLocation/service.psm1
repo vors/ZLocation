@@ -71,11 +71,11 @@ class ServiceProxy {
 }
 
 class RpcRequest {
-    $method
-    $arguments
+    [string]$method
+    [object[]]$arguments
 }
 
 class RpcResponse {
-    $return
-    $exception
+    [object]$return
+    [string]$exception
 }
