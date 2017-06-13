@@ -27,7 +27,7 @@ class ServiceHost {
         try {
             $response.return = $this.service.$($rpcRequest.method).Invoke($rpcRequest.arguments)
         } catch {
-            $response.exception = $_.Exception
+            $response.exception = $_.Exception.ToString()
         }
         return $response
     }
