@@ -44,10 +44,10 @@ class ServiceProxy {
 
     [ZLocation.IpcClient]$pipeClient
 
-    [object] _call($method, $args) {
-        $request = @{
+    [object] _call([string]$method, [object[]]$arguments) {
+        $request = [RpcRequest]@{
             method = $method;
-            args = $args;
+            arguments = $arguments;
         } | ConvertTo-Json -Compress
         $response = [RpcResponse]($this.pipeClient.request($request))
         if($response.exception -ne $null) { throw $response.exception }
