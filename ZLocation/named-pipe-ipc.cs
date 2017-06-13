@@ -272,8 +272,8 @@ namespace ZLocation {
             if(ps.InvocationStateInfo.State == PSInvocationState.Failed) {
                 throw ps.InvocationStateInfo.Reason;
             }
-            if(results.Count != 1) {
-                throw new WrongNumberOfReturnValuesException("Expected exactly 1 return value; got " + results.Count, ps.Streams.Error.GetEnumerator());
+            if(results.Count == 0) {
+                return default(T);
             }
             object result = results[0].ImmediateBaseObject;
             if(result is T) {
@@ -281,13 +281,6 @@ namespace ZLocation {
             } else {
                 return default(T); // TODO THROW AN ERROR(?)
             }
-        }
-
-        public class WrongNumberOfReturnValuesException : Exception {
-            public WrongNumberOfReturnValuesException(string message, IEnumerator<ErrorRecord> errors) : base(message) {
-                this.ErrorStreamRecords = errors;
-            }
-            public IEnumerator<ErrorRecord> ErrorStreamRecords;
         }
     }
 }
