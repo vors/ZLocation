@@ -1,3 +1,4 @@
+Import-Module $PSScriptRoot\environment.psm1
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
 
 Describe 'ZLocation.Storage' {

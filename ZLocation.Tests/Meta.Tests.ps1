@@ -1,5 +1,6 @@
 $ErrorActionPreference = 'stop'
 Set-StrictMode -Version latest
+Import-Module $PSScriptRoot\environment.psm1
 
 $RepoRoot = (Resolve-Path $PSScriptRoot\..).Path
 

@@ -1,5 +1,7 @@
 # This is integration tests.
 
+Import-Module $PSScriptRoot\environment.psm1
+
 # -Force re-import nested modules as well
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
@@ -59,10 +61,11 @@ Describe 'ZLocation' {
         }
 
         It 'should not block user from cd around' {
+            $fsRoot = if($IsWindows) { 'C:\' } else { '/' }
             try {
                 $curDirFullPath = ($pwd).Path
-                cd 'c:\'
-                ($pwd).Path | Should Be 'C:\'
+                cd $fsRoot
+                ($pwd).Path | Should Be $fsRoot
             } finally {
                 cd $curDirFullPath
                 ($pwd).Path | Should Be $curDirFullPath
