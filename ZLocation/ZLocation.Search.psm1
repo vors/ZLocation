@@ -10,7 +10,7 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
             $hash.Remove($key)
         }
     }
-    $res = $hash.GetEnumerator() | sort -Property Value -Descending
+    $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
     if ($res) {
         $res | %{$_.Name}
     }

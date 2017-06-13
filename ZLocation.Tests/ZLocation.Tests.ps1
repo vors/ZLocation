@@ -33,14 +33,14 @@ Describe 'ZLocation' {
                 $h[$newDirFullPath] | Should Be 1
             } finally {
                 cd $curDirFullPath
-                rm -rec -force $newdirectory
+                Remove-Item -rec -force $newdirectory
                 Remove-ZLocation $newDirFullPath
             }
         }
     }
 
     Context 'Pipe is broken' {
-        $csCode = cat (Join-Path $PSScriptRoot "MockServiceProxy.cs") -Raw
+        $csCode = Get-Content (Join-Path $PSScriptRoot "MockServiceProxy.cs") -Raw
         Add-Type -TypeDefinition $csCode
         
         Mock -ModuleName ZLocation.Storage Get-ZServiceProxy {
