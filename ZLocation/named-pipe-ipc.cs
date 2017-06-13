@@ -109,6 +109,10 @@ namespace ZLocation {
                     }
                 } catch(MessagePipe.BrokenOrClosedPipeException) {
                     return;
+                } catch(Exception ex) {
+                    // Log the error and close the connection
+                    Console.WriteLine("unexpected exception in handleClient: " + ex);
+                    return;
                 }
             }
         }
