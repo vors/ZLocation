@@ -36,7 +36,7 @@ Goals / Key features
 *  Support for multiple PS sessions.
 *  Customizable matching algorithm and weight function.
 
-##Install
+## Install
 Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/ZLocation/)
 ```powershell
 Install-Module ZLocation -Scope CurrentUser
