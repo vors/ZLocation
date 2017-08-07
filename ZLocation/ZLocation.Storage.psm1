@@ -10,7 +10,7 @@ function Get-ZLocationBackupFilePath
 
 function Get-ZLocationPipename
 {
-    return 'zlocation'
+    return 'zlocation' + $env:USERNAME
 }
 
 #
