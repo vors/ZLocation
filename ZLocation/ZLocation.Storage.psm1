@@ -5,7 +5,7 @@ $baseAddress = "net.pipe://localhost"
 
 function Get-ZLocationBackupFilePath
 {
-    return (Join-Path $env:HOMEDRIVE (Join-Path $env:HOMEPATH 'z-location.txt'))
+    return (Join-Path $env:USERPROFILE 'z-location.txt')
 }
 
 function Get-ZLocationPipename
