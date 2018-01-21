@@ -1,18 +1,18 @@
 version: 0.2.0.{build}
 
 install:
-  - cinst pester
-  - git clone https://github.com/psake/psake C:\projects\psake
+  - ps: Install-Module Pester -Scope CurrentUser
+  - ps: Install-Module psake -Scope CurrentUser
 
 build: false
 
 test_script:
   - ps: |
-        Import-Module C:\projects\psake
+        Import-Module psake
         Invoke-PSake AppveyorTest
         # this is a hack, psake doesn't propagate exit code
-        if ($psake.build_success -eq $false) { 
-            exit 1 
+        if ($psake.build_success -eq $false) {
+            exit 1
         }
 
 deploy: off
