@@ -19,7 +19,7 @@ function Update-ZLocation([string]$path)
     {
         $prev = $global:__zlocation_current
         $weight = $now.Subtract($prev.Time).TotalSeconds
-        Add-ZWeight ($prev.Location) $weight 
+        Add-ZWeight ($prev.Location) $weight
     }
 
     $global:__zlocation_current = @{
@@ -31,7 +31,7 @@ function Update-ZLocation([string]$path)
     Add-ZWeight $path 0
 }
 
-# this approach hurts `cd` performance (0.0008 sec vs 0.025 sec). 
+# this approach hurts `cd` performance (0.0008 sec vs 0.025 sec).
 # Consider replacing it with OnIdle Event.
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
 #>
@@ -71,15 +71,15 @@ if (Test-Path Function:\TabExpansion) {
 
 function Get-EscapedPath
 {
-    param( 
+    param(
     [Parameter(
-        Position=0, 
-        Mandatory=$true, 
+        Position=0,
+        Mandatory=$true,
         ValueFromPipeline=$true,
         ValueFromPipelineByPropertyName=$true)
     ]
     [string]$path
-    ) 
+    )
 
     process {
         if ($path.Contains(' '))
@@ -92,7 +92,8 @@ function Get-EscapedPath
 
 function global:TabExpansion($line, $lastWord) {
     switch -regex ($line) {
-        "^(Set-ZLocation|z) .*" {
+        $TabExpansionRegex {
+        # "^(Set-ZLocation|z|j|pineapple) .*" {
             $arguments = $line -split ' ' | Where { $_.length -gt 0 } | select -Skip 1
             Find-Matches (Get-ZLocation) $arguments | Get-EscapedPath
         }
@@ -138,7 +139,7 @@ function Set-ZLocation()
             Write-Warning "There is no path $match on the file system. Removing obsolete data from database."
             Remove-ZLocation $match
         }
-    } 
+    }
     if (-not $pushDone) {
         Write-Warning "Cannot find matching location"
     }
@@ -147,6 +148,13 @@ function Set-ZLocation()
 Register-PromptHook
 
 Set-Alias -Name z -Value Set-ZLocation
+
+# Create a list of aliases for Set-Zlocation, and add Set-Zlocation
+$szlAliases = ((Get-Alias -Definition Set-ZLocation | %{[regex]::Escape($_)}) + 'Set-ZLocation')
+
+# Make a regex to match starting a string with an alias followed by a space
+$TabExpansionRegex = '^('+$($szlAliases -join '|')+') '
+
 Export-ModuleMember -Function @('Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation
