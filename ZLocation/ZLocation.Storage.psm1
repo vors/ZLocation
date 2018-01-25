@@ -167,10 +167,12 @@ function Get-ZLocation($Match)
 
     if ($Match)
     {
-        # Remove locations that don't match $Match
-        $mismatches = $hash.Keys | ?{$_ -notin (Find-Matches $hash $Match)}
-        $mismatches | %{$hash.Remove($_)}
+        # Create a new hash containing only matching locations
+        $newhash = @{}
+        Find-Matches $hash $Match | %{$newhash.add($_, $hash[$_])}
+        $hash = $newhash
     }
+
     return $hash
 }
 
