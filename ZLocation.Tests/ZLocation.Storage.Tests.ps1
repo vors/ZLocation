@@ -3,7 +3,7 @@ Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
 Describe 'ZLocation.Storage' {
 
     $originalCount = (Get-ZLocation).Count
-    
+
     try {
 
         $path = [guid]::NewGuid().Guid
@@ -29,6 +29,18 @@ Describe 'ZLocation.Storage' {
             $h.Count | Should Be ($originalCount + 2)
         }
 
+        It 'can filter paths' {
+            $h = Get-ZLocation -Match $path2.Substring(0,5)
+            $path | Should -Not -BeIn $h.Keys # Fails in Pester 3 - no BeIn
+            $path2 | Should -BeIn $h.Keys # Fails in Pester 3 - no BeIn
+        }
+
+        It 'can filter paths with multiple filters' {
+            $h = Get-ZLocation -Match $path2.Substring(0,5),$path.Substring(0,5)
+            $path | Should -BeIn $h.Keys # Fails in Pester 3 - no BeIn
+            $path2 | Should -BeIn $h.Keys # Fails in Pester 3 - no BeIn
+        }
+
     } finally {
 
         It 'can remove path' {
@@ -40,6 +52,6 @@ Describe 'ZLocation.Storage' {
             $h = Get-ZLocation
             $h.Count | Should Be $originalCount
         }
-        
+
     }
 }
