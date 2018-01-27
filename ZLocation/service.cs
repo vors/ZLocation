@@ -3,27 +3,20 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.ServiceModel;
 
 namespace ZLocation
 {
-    [ServiceContract()]
     public interface IService
     {
-        [OperationContract()]
         void Add(string path, double weight);
 
-        [OperationContract()]
         void Remove(string path);
 
-        [OperationContract()]
         IEnumerable<KeyValuePair<string, double>> Get();
 
-        [OperationContract()]
         void Noop();
     }
 
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class Service : IService
     {
         private ConcurrentDictionary<string, double> _data;

@@ -1,7 +1,6 @@
 Set-StrictMode -Version Latest
 
 $script:alreadyFailed = $false
-$baseAddress = "net.pipe://localhost"
 
 function Get-ZLocationBackupFilePath
 {
@@ -25,11 +24,7 @@ function Get-ZServiceProxy
     if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
     {
         Set-Types
-        $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
-            (Get-Binding),        
-            ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
-        )    
-        $Script:pipeProxy = $pipeFactory.CreateChannel()
+        $Script:pipeProxy = New-ServiceProxy
     }
     $Script:pipeProxy
 }
@@ -61,27 +56,14 @@ function Get-ZService()
             log "[ZLocation] Types already added"
             return
         }
-        $smaTime = Measure-Command { Add-Type -AssemblyName System.ServiceModel }
-        log "Add System.ServiceModel assembly in $($smaTime.TotalSeconds) sec"
-        $csCode = cat (Join-Path $PSScriptRoot "service.cs") -Raw
-        $serviceTime = Measure-Command { Add-Type -ReferencedAssemblies System.ServiceModel -TypeDefinition $csCode }
-        log "Compile and add ZLocation storage service in $($serviceTime.TotalSeconds) sec"
-    }
-
-    #
-    # Called only if Types are already populated
-    #
-    function Get-Binding()
-    {
-        if (-not (Test-Path variable:Script:binding)) {
-            log "Create new .NET pipe service binding"
-            $Script:binding = New-Object -TypeName 'System.ServiceModel.NetNamedPipeBinding'
-            $Script:binding.OpenTimeout = [timespan]::MaxValue
-            $Script:binding.CloseTimeout = [timespan]::MaxValue
-            $Script:binding.ReceiveTimeout = [timespan]::MaxValue
-            $Script:binding.SendTimeout = [timespan]::MaxValue
+        $csCode = Get-Content (Join-Path $PSScriptRoot "service.cs") -Raw
+        $csCode2 = Get-Content (Join-Path $PSScriptRoot "named-pipe-ipc.cs") -Raw
+        $serviceTime = Measure-Command {
+            Add-Type -TypeDefinition $csCode
+            Add-Type -TypeDefinition $csCode2
         }
-        return $Script:binding
+        log "Compile and add ZLocation storage service in $($serviceTime.TotalSeconds) sec"
+        Import-Module (Join-Path $PSScriptRoot "service.psm1")
     }
 
     #
@@ -90,19 +72,7 @@ function Get-ZService()
     function Start-ZService()
     {
         Set-Types
-        $service = New-Object 'System.ServiceModel.ServiceHost' -ArgumentList (
-            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ), 
-            [uri]($baseAddress)
-        )
-
-        # It would be useful to add debugBehaviour, like this
-        # $debugBehaviour = $service.Description.Behaviors.Find[System.ServiceModel.Description.ServiceDebugBehavior]();
-        # $debugBehaviour = [System.ServiceModel.Description.ServiceDebugBehavior]::new()
-        # $debugBehaviour.IncludeExceptionDetailInFaults = $true
-        # $service.Description.Behaviors.Add($debugBehaviour);
-
-        $service.AddServiceEndpoint([ZLocation.IService], (Get-Binding), (Get-ZLocationPipename) ) > $null
-        $service.Open() > $null
+        $Script:service = New-ServiceHost(New-Object ZLocation.Service((Get-ZLocationBackupFilePath)))
     }
 
     $service = Get-ZServiceProxy

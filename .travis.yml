@@ -1,0 +1,20 @@
+language: generic
+dist: trusty
+install:
+  # - curl -L -o PowerShell.AppImage https://github.com/PowerShell/PowerShell/releases/download/v6.0.0-beta.2/PowerShell-6.0.0-beta.2-x86_64.AppImage
+  # - chmod a+x PowerShell.AppImage
+  - mkdir -p ./build
+  # - git clone https://github.com/psake/psake ./build/psake
+script:
+  # - ./PowerShell.AppImage --appimage-extract
+  # - ./squashfs-root/AppRun -File ./travis.ps1
+  - powershell -File ./travis.ps1
+
+
+addons:
+  apt:
+    sources:
+    - sourceline: 'deb [arch=amd64] https://packages.microsoft.com/ubuntu/14.04/prod trusty main'
+      key_url: 'https://packages.microsoft.com/keys/microsoft.asc'
+    packages:
+    - powershell

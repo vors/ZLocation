@@ -1,11 +1,12 @@
 $ErrorActionPreference = 'stop'
 Set-StrictMode -Version latest
+Import-Module $PSScriptRoot\environment.psm1
 
 $RepoRoot = (Resolve-Path $PSScriptRoot\..).Path
 
 Describe 'Text files formatting' {
     
-    $allTextFiles = ls -File -Recurse $RepoRoot
+    $allTextFiles = Get-ChildItem $RepoRoot -Exclude bin,obj,build | Get-ChildItem -File -Recurse
     
     Context 'Files encoding' {
 
@@ -28,7 +29,7 @@ Describe 'Text files formatting' {
             $totalTabsCount = 0
             $allTextFiles | %{
                 $fileName = $_.FullName
-                cat $_.FullName -Raw | Select-String "`t" | % {
+                Get-Content $_.FullName -Raw | Select-String "`t" | % {
                     Write-Warning "There are tab in $fileName"
                     $totalTabsCount++
                 }
@@ -42,11 +43,11 @@ Describe 'Version consistency' {
 
     It 'uses consistent version in ZLocation.psd1 and appveyor.yml' {
         # TODO: can we use some yml parser for that?
-        $ymlVersionLine = cat $RepoRoot\appveyor.yml | ? {$_ -like 'version: *'} | Select -first 1
+        $ymlVersionLine = Get-Content $RepoRoot\appveyor.yml | ? {$_ -like 'version: *'} | Select -first 1
         # i.e. $ymlVersionLine = 'version: 1.7.0.{build}'
         $ymlVersionLine | Should Not BeNullOrEmpty
         
-        $manifest = (cat $RepoRoot\ZLocation\ZLocation.psd1 -Raw) | iex
+        $manifest = (Get-Content $RepoRoot\ZLocation\ZLocation.psd1 -Raw) | Invoke-Expression
         "version: $($manifest.ModuleVersion).{build}" | Should be $ymlVersionLine
     }
 }

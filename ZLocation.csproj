@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <BaseOutputPath>bin\$(Platform)-$(OS)\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>obj\$(Platform)-$(OS)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <!-- Windows config -->
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <!-- To keep the IDE's language service happy when it's running on Windows -->
+    <TargetFramework>net462</TargetFramework>
+    <DefineConstants>WINDOWS</DefineConstants>
+  </PropertyGroup>
+  <!-- Linux config -->
+  <PropertyGroup Condition=" '$(OS)' == 'Unix' ">
+    <!-- Must match the TargetFramework used to build powershell -->
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <DefineConstants>LINUX</DefineConstants>
+  </PropertyGroup>
+  <!-- Common assemblies -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.0.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <!-- Windows assemblies -->
+  <ItemGroup Condition=" '$(OS)' == 'Windows_NT' ">
+  </ItemGroup>
+  <!-- Linux assemblies -->
+  <ItemGroup Condition=" '$(OS)' == 'Unix' ">
+    <!-- For some reason this DLL exists in PowerShell but not in dotnet core -->
+    <Reference Include="System.IO.Pipes" />
+  </ItemGroup>
+  <!-- Source code -->
+  <ItemGroup>
+    <Compile Include="ZLocation\named-pipe-ipc.cs" />
+    <Compile Include="ZLocation\service.cs" />
+  </ItemGroup>
+</Project>
