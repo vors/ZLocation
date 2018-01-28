@@ -1,5 +1,7 @@
 Set-StrictMode -Version Latest
 
+Import-Module (Join-Path $PSScriptRoot 'ZLocation.Search.psm1')
+
 $script:alreadyFailed = $false
 $baseAddress = "net.pipe://localhost"
 
@@ -22,13 +24,13 @@ function Get-ZServiceProxy
         [switch]$Force
     )
 
-    if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force) 
+    if ((-not (Test-Path variable:Script:pipeProxy)) -or $Force)
     {
         Set-Types
         $pipeFactory = New-Object -TypeName 'System.ServiceModel.ChannelFactory`1[[ZLocation.IService]]' -ArgumentList @(
-            (Get-Binding),        
+            (Get-Binding),
             ( New-Object -TypeName 'System.ServiceModel.EndpointAddress' -ArgumentList ( $baseAddress + '/' + (Get-ZLocationPipename) ) )
-        )    
+        )
         $Script:pipeProxy = $pipeFactory.CreateChannel()
     }
     $Script:pipeProxy
@@ -85,13 +87,13 @@ function Get-ZService()
     }
 
     #
-    # 
+    #
     #
     function Start-ZService()
     {
         Set-Types
         $service = New-Object 'System.ServiceModel.ServiceHost' -ArgumentList (
-            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ), 
+            (New-Object 'ZLocation.Service' -ArgumentList @( (Get-ZLocationBackupFilePath) ) ),
             [uri]($baseAddress)
         )
 
@@ -107,9 +109,9 @@ function Get-ZService()
 
     $service = Get-ZServiceProxy
     $retryCount = 0
-    
+
     # This while loop is horrible, sorry future me.
-    while ($true) 
+    while ($true)
     {
         $retryCount++
         try {
@@ -129,7 +131,7 @@ function Get-ZService()
                 # This is the codepath that causes rear problems with broken pipe (https://github.com/vors/ZLocation/issues/1)
                 return $null
             }
-            
+
         }
     }
 
@@ -140,7 +142,7 @@ function Fail-Gracefully
 {
     if (-not $script:alreadyFailed) {
         Write-Warning @'
-ZLocation Pipe become broken :( ZLocation is now self-disabled. 
+ZLocation Pipe become broken :( ZLocation is now self-disabled.
 You need to restart all PowerShell instances to re-enable ZLocation.
 Please continue your work and do it, when convinient.
 You can report the problem on https://github.com/vors/ZLocation/issues
@@ -149,19 +151,28 @@ You can report the problem on https://github.com/vors/ZLocation/issues
     }
 }
 
-function Get-ZLocation()
+function Get-ZLocation($Match)
 {
     $service = Get-ZService
     $hash = @{}
-    if ($service) 
+    if ($service)
     {
-        foreach ($item in $service.Get()) 
+        foreach ($item in $service.Get())
         {
             $hash.add($item.Key, $item.Value)
-        }    
+        }
     } else {
         Fail-Gracefully
     }
+
+    if ($Match)
+    {
+        # Create a new hash containing only matching locations
+        $newhash = @{}
+        $Match | %{Find-Matches $hash $_} | %{$newhash.add($_, $hash[$_])}
+        $hash = $newhash
+    }
+
     return $hash
 }
 
@@ -171,13 +182,13 @@ function Add-ZWeight([string]$path, [double]$weight) {
     {
         $service.Add($path, $weight)
     } else {
-        Fail-Gracefully    
+        Fail-Gracefully
     }
 }
 
 function Remove-ZLocation([string]$path) {
     $service = Get-ZService
-    if ($service) 
+    if ($service)
     {
         $service.Remove($path)
     } else {
