@@ -150,7 +150,14 @@ Register-PromptHook
 Set-Alias -Name z -Value Set-ZLocation
 
 # Create a list of aliases for Set-Zlocation, and add Set-Zlocation
-$szlAliases = ((Get-Alias -Definition Set-ZLocation | %{[regex]::Escape($_)}) + 'Set-ZLocation')
+$szlAliases = @(
+    foreach ($alias in Get-Alias -Definition Set-ZLocation) {
+        [regex]::Escape($alias.Name)
+    }
+
+    'Set-ZLocation'
+)
+
 
 # Make a regex to match starting a string with an alias followed by a space
 $TabExpansionRegex = '^('+$($szlAliases -join '|')+') '
