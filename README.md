@@ -48,7 +48,7 @@ It intentionally doesn't alternate `$profile` automatically on installation.
 This one-liner installs ZLocation, imports it and adds it to a profile.
 
 ```powershell
-Install-Module ZLocation -Scope CurrentUser; Import-Module ZLocation; "`r`n`r`nImport-Module ZLocation`r`n" >> $profile.CurrentUserAllHosts
+Install-Module ZLocation -Scope CurrentUser; Import-Module ZLocation; Add-Content -Value "`r`n`r`nImport-Module ZLocation`r`n" -Encoding utf8 -Path $profile.CurrentUserAllHosts
 ```
 
 If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$profile` after import. 
