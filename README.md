@@ -56,6 +56,19 @@ If you want to display some additional information about ZLocation on start-up, 
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
+License
+-------
+
+ZLocation is released under the [MIT](LICENSE) license.
+
+ZLocation bundles a copy of [LiteDB](https://github.com/mbdavid/LiteDB).
+
+## LiteDB License
+
+[MIT](http://opensource.org/licenses/MIT)
+
+Copyright (c) 2017 - Maurício David.
+
 Develop
 -------
 
