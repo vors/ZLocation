@@ -5,8 +5,8 @@ image:
 - Ubuntu
 
 install:
-  - ps: Install-Module Pester -Scope CurrentUser
-  - ps: Install-Module psake -Scope CurrentUser
+  - ps: Install-Module Pester -Scope CurrentUser -Force
+  - ps: Install-Module psake -Scope CurrentUser -Force
 
 build: false
 
