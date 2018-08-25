@@ -1,5 +1,7 @@
 Set-StrictMode -Version Latest
 
+if($IsWindows -eq $null) { $IsWindows = $true }
+
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
     $hash = $hash.Clone()
@@ -10,7 +12,7 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
             $hash.Remove($key)
         }
     }
-    $res = $hash.GetEnumerator() | sort -Property Value -Descending
+    $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
     if ($res) {
         $res | %{$_.Name}
     }
@@ -58,12 +60,12 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     if ([System.IO.Path]::IsPathRooted($rootQuery)) 
     {
         # doing a tweak to handle 'C:' and 'C:\' cases correctly.
-        if (($rootQuery.Length) -eq 2 -and ($rootQuery[-1] -eq ':'))
+        if ($IsWindows -and ($rootQuery.Length) -eq 2 -and ($rootQuery[-1] -eq ':'))
         {
             $rootQuery = $rootQuery + "\"
         }
         # doing a tweaks to handle 'C:\foo' and 'C:\foo\' cases correctly.
-        elseif ($rootQuery[-1] -eq '\')
+        elseif ($rootQuery -ne '/' -and $rootQuery[-1] -eq [IO.Path]::DirectorySeparatorChar)
         {
             $rootQuery = $rootQuery.Substring(0, $rootQuery.Length-1)
         }

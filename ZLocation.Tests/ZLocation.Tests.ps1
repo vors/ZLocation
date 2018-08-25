@@ -33,7 +33,7 @@ Describe 'ZLocation' {
                 $h[$newDirFullPath] | Should Be 1
             } finally {
                 cd $curDirFullPath
-                rm -rec -force $newdirectory
+                Remove-Item -rec -force $newdirectory
                 Remove-ZLocation $newDirFullPath
             }
         }

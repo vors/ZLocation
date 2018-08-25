@@ -37,7 +37,7 @@ class Location {
 
 function Get-ZLocationDatabaseFilePath
 {
-    return (Join-Path $env:USERPROFILE 'z-location.db')
+    return (Join-Path $HOME 'z-location.db')
 }
 
 $service = [Service]::new()
