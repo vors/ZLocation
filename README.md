@@ -61,9 +61,9 @@ License
 
 ZLocation is released under the [MIT](LICENSE) license.
 
-ZLocation bundles a copy of [LiteDB](https://github.com/mbdavid/LiteDB).
+ZLocation bundles a copy of [LiteDB](http://www.litedb.org/).
 
-## LiteDB License
+### LiteDB License
 
 [MIT](http://opensource.org/licenses/MIT)
 
