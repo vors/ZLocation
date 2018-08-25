@@ -1,5 +1,9 @@
 version: 0.3.0.{build}
 
+image:
+- Visual Studio 2015
+- Ubuntu
+
 install:
   - ps: Install-Module Pester -Scope CurrentUser
   - ps: Install-Module psake -Scope CurrentUser
@@ -19,6 +23,8 @@ deploy: off
 
 on_finish:
     - ps: |
+        # Only publish one artifact
+        if(-not $IsWindows) exit
         $stagingDirectory = (Resolve-Path .).Path
         $zipFile = Join-Path $stagingDirectory "$(Split-Path $pwd -Leaf).zip"
         Add-Type -assemblyname System.IO.Compression.FileSystem
