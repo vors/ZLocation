@@ -40,16 +40,4 @@ Describe 'ZLocation' {
             }
         }
     }
-
-    InModuleScope ZLocation {
-        Context 'Alias matching regex' {
-            It 'Should match the full command name' {
-                'Set-ZLocation whatever' | Should Match $TabExpansionRegex
-            }
-
-            It 'Should match the default "z" alias' {
-                'z whatever' | Should Match $TabExpansionRegex
-            }
-        }
-    }
 }
