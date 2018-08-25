@@ -5,9 +5,7 @@ $RepoRoot = (Resolve-Path $PSScriptRoot\..).Path
 
 Describe 'Text files formatting' {
     
-    $allTextFiles = Get-ChildItem $RepoRoot -Exclude dependencies | % {
-        Get-ChildItem -file -recurse $_
-    }
+    $allTextFiles = Get-ChildItem -file -recurse $RepoRoot -Exclude *.dll
     
     Context 'Files encoding' {
 
