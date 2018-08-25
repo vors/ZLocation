@@ -1,9 +1,16 @@
+param($Options = @{})
 Set-StrictMode -Version Latest
 
 # Listing nested modules in .psd1 creates additional scopes and Pester cannot mock cmdlets in those scopes.
 # Instead we import them here which works.
 Import-Module "$PSScriptRoot\ZLocation.Search.psm1"
 Import-Module "$PSScriptRoot\ZLocation.Storage.psm1"
+
+$RegisterAutomatically = $true
+try {
+    if($Options.Register -eq $false) { $RegisterAutomatically = $false }
+} catch {}
+write-host $RegisterAutomatically
 
 # I currently consider number of commands executed in directory to be a better metric, than total time spent in a directory.
 # See [corresponding issue](https://github.com/vors/ZLocation/issues/6) for details.
@@ -44,6 +51,7 @@ function Update-ZLocation([string]$path)
 function Register-PromptHook
 {
     param()
+    if(-not $RegisterAutomatically) { return }
 
     $oldPrompt = Get-Content function:\prompt
     if( $oldPrompt -notlike '*Update-ZLocation*' )
