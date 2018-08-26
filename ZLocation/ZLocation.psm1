@@ -66,14 +66,16 @@ Update-ZLocation $pwd
 #
 # Tab completion.
 #
-Register-ArgumentCompleter -CommandName Set-ZLocation -ParameterName match -ScriptBlock {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-    # Omit first item (command name) and empty strings
-    $i = $commandAst.CommandElements.Count
-    [string[]]$query = if($i -gt 1) {
-        $commandAst.CommandElements[1..($i-1)] | ForEach-Object { $_.toString()}
+if(Get-Command -Name Register-ArgumentCompleter -ErrorAction Ignore) {
+    Register-ArgumentCompleter -CommandName Set-ZLocation -ParameterName match -ScriptBlock {
+        param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+        # Omit first item (command name) and empty strings
+        $i = $commandAst.CommandElements.Count
+        [string[]]$query = if($i -gt 1) {
+            $commandAst.CommandElements[1..($i-1)] | ForEach-Object { $_.toString()}
+        }
+        Find-Matches (Get-ZLocation) $query | Get-EscapedPath
     }
-    Find-Matches (Get-ZLocation) $query | Get-EscapedPath
 }
 
 function Get-EscapedPath
