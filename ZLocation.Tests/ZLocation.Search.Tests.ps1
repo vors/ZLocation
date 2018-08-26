@@ -1,5 +1,7 @@
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 
+. "$PSScriptRoot/_mocks.ps1"
+
 if($IsWindows -eq $null) {
     $IsWindows = $true
 }

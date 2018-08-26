@@ -5,6 +5,8 @@
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.psm1 -Force
 
+. "$PSScriptRoot/_mocks.ps1"
+
 Describe 'ZLocation' {
 
     Context 'Success scenario' {
