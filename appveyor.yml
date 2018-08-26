@@ -24,7 +24,7 @@ deploy: off
 on_finish:
     - ps: |
         # Only publish one artifact
-        if(-not $IsWindows) { return }
+        if($IsWindows -eq $False) { return }
         $stagingDirectory = (Resolve-Path .).Path
         $zipFile = Join-Path $stagingDirectory "$(Split-Path $pwd -Leaf).zip"
         Add-Type -assemblyname System.IO.Compression.FileSystem
