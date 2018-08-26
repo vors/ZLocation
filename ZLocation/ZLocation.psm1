@@ -147,5 +147,3 @@ Set-Alias -Name z -Value Set-ZLocation
 Export-ModuleMember -Function @('Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation
-
-export-modulemember -function Find-Matches
