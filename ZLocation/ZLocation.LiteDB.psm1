@@ -1,7 +1,7 @@
 $mapper = [LiteDB.BSONMapper]::new()
 
-Function Open([string]$path) {
-    [LiteDB.LiteDatabase]::new($path)
+Function Open([string]$connectionString) {
+    [LiteDB.LiteDatabase]::new($connectionString)
 }
 
 Function Get-Collection($db, $name) {
