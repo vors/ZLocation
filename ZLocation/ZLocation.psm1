@@ -10,7 +10,6 @@ $RegisterAutomatically = $true
 try {
     if($Options.Register -eq $false) { $RegisterAutomatically = $false }
 } catch {}
-write-host $RegisterAutomatically
 
 # I currently consider number of commands executed in directory to be a better metric, than total time spent in a directory.
 # See [corresponding issue](https://github.com/vors/ZLocation/issues/6) for details.
