@@ -1,12 +1,37 @@
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 
+. "$PSScriptRoot/_mocks.ps1"
+
+if($IsWindows -eq $null) {
+    $IsWindows = $true
+}
+
 Describe 'Find-Matches filters results correctly' {
     Context 'Equal weight' {
-        $data = @{
-            'C:\foo1\foo2\foo3' = 1.0
-            'C:\foo1\foo2' = 1.0
-            'C:\foo1' = 1.0
-            'C:\' = 1.0
+        if($IsWindows) {
+            $data = @{
+                'C:\foo1\foo2\foo3' = 1.0
+                'C:\foo1\foo2' = 1.0
+                'C:\foo1' = 1.0
+                'C:\' = 1.0
+            }
+            $rootPath = 'C:\'
+            $foo1Path = 'C:\foo1'
+            $foo2Path = 'C:\foo1\foo2'
+            $foo3Path = 'C:\foo1\foo2\foo3'
+            $pathSep = '\'
+        } else {
+            $data = @{
+                '/foo1/foo2/foo3' = 1.0
+                '/foo1/foo2' = 1.0
+                '/foo1' = 1.0
+                '/' = 1.0
+            }
+            $rootPath = '/'
+            $foo1Path = '/foo1'
+            $foo2Path = '/foo1/foo2'
+            $foo3Path = '/foo1/foo2/foo3'
+            $pathSep = '/'
         }
 
         It 'Does not modify data' {
@@ -15,7 +40,7 @@ Describe 'Find-Matches filters results correctly' {
         }
 
         It 'returns only leave result' {
-            Find-Matches $data foo2 | Should Be 'C:\foo1\foo2'
+            Find-Matches $data foo2 | Should Be $foo2Path
         }
 
         It 'returns multiply results' {
@@ -23,30 +48,46 @@ Describe 'Find-Matches filters results correctly' {
         }
 
         It 'should be case-insensitive' {
-            Find-Matches $data FoO1 | Should Be 'C:\foo1'
+            Find-Matches $data FoO1 | Should Be $foo1Path
         }
 
-        It 'returns disk root folder for C:' {
-            Find-Matches $data C: | Should Be 'C:\'
+        If($IsWindows) {
+            It 'returns disk root folder for C:' {
+                Find-Matches $data C: | Should Be $rootPath
+            }
+
+            It 'returns disk root folder for C' {
+                Find-Matches $data C | Should Be $rootPath
+            }
+        } else {
+            It 'returns disk root folder for /' {
+                Find-Matches $data / | Should Be $rootPath
+            }
         }
 
-        It 'returns disk root folder for C' {
-            Find-Matches $data C | Should Be 'C:\'
+        It "should ignore trailing $pathSep" {
+            Find-Matches $data "$foo1Path$pathSep" | Should Be $foo1Path
         }
 
-        It 'should ignore trailing \' {
-            Find-Matches $data C:\foo1\ | Should Be 'C:\foo1'
-        }
     }
 
     Context 'Different weight' {
-        $data = @{
-            'C:\admin' = 1.0
-            'C:\admin\monad' = 2.0
+        if($IsWindows) {
+            $data = @{
+                'C:\admin' = 1.0
+                'C:\admin\monad' = 2.0
+            }
+            $adminPath = 'C:\admin'
+        } else {
+            $data = @{
+                '/admin' = 1.0
+                '/admin/monad' = 2.0
+            }
+            $adminPath = '/admin'
         }
 
         It 'Use leaf matches' {
-            Find-Matches $data 'adm' | Should Be 'C:\admin'
+            Find-Matches $data 'adm' | Should Be $adminPath
         }
     }
 }

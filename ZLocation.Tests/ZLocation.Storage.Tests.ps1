@@ -1,5 +1,7 @@
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
 
+. "$PSScriptRoot/_mocks.ps1"
+
 Describe 'ZLocation.Storage' {
 
     $originalCount = (Get-ZLocation).Count

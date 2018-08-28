@@ -5,6 +5,8 @@
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.psm1 -Force
 
+. "$PSScriptRoot/_mocks.ps1"
+
 Describe 'ZLocation' {
 
     Context 'Success scenario' {
@@ -33,39 +35,8 @@ Describe 'ZLocation' {
                 $h[$newDirFullPath] | Should Be 1
             } finally {
                 cd $curDirFullPath
-                rm -rec -force $newdirectory
+                Remove-Item -rec -force $newdirectory
                 Remove-ZLocation $newDirFullPath
-            }
-        }
-    }
-
-    Context 'Pipe is broken' {
-        $csCode = cat (Join-Path $PSScriptRoot "MockServiceProxy.cs") -Raw
-        Add-Type -TypeDefinition $csCode
-
-        Mock -ModuleName ZLocation.Storage Get-ZServiceProxy {
-            param(
-                [switch]$Force
-            )
-            return (New-Object 'ZLocation.MockServiceProxy')
-        }
-
-        Mock -ModuleName ZLocation.Storage Fail-Gracefully {} -Verifiable
-
-        It 'should fail gracefully' {
-            # because of mock, our proxy would be broken all the time
-            z foo
-            Assert-VerifiableMock
-        }
-
-        It 'should not block user from cd around' {
-            try {
-                $curDirFullPath = ($pwd).Path
-                cd 'c:\'
-                ($pwd).Path | Should Be 'C:\'
-            } finally {
-                cd $curDirFullPath
-                ($pwd).Path | Should Be $curDirFullPath
             }
         }
     }

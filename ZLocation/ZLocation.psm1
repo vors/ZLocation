@@ -2,6 +2,7 @@ Set-StrictMode -Version Latest
 
 # Listing nested modules in .psd1 creates additional scopes and Pester cannot mock cmdlets in those scopes.
 # Instead we import them here which works.
+Import-Module "$PSScriptRoot\ZLocation.Service.psd1"
 Import-Module "$PSScriptRoot\ZLocation.Search.psm1"
 Import-Module "$PSScriptRoot\ZLocation.Storage.psm1"
 
