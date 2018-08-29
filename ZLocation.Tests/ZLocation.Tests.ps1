@@ -41,15 +41,36 @@ Describe 'ZLocation' {
         }
     }
 
-    InModuleScope ZLocation {
-        Context 'Alias matching regex' {
-            It 'Should match the full command name' {
-                'Set-ZLocation whatever' | Should Match $TabExpansionRegex
-            }
-
-            It 'Should match the default "z" alias' {
-                'z whatever' | Should Match $TabExpansionRegex
-            }
+    Context 'tab completion' {
+        Function Complete($command) {
+            [System.Management.Automation.CommandCompletion]::CompleteInput($command, $command.Length, @{}).CompletionMatches.ListItemText
+            (TabExpansion2 $command $command.Length).CompletionMatches.ListItemText
+        }
+        BeforeEach {
+            Update-ZLocation 'prefixABC'
+            Update-ZLocation 'prefixDEF'
+            Update-ZLocation 'notthisGHI'
+            Update-ZLocation 'notthisJKL'
+        }
+        AfterEach {
+            Remove-ZLocation -path 'prefixABC'
+            Remove-ZLocation -path 'prefixDEF'
+            Remove-ZLocation -path 'notthisGHI'
+            Remove-ZLocation -path 'notthisJKL'
+        }
+        It 'should offer only completions matching entered text' {
+            $completions = Complete 'z refix'
+            $completions | Should -Contain 'prefixABC'
+            $completions | Should -Contain 'prefixDEF'
+            $completions | Should -Not -Contain 'notthisGHI'
+            $completions | Should -Not -Contain 'notthisJKL'
+        }
+        It 'should offer all completions when invoked without prefix' {
+            $completions = Complete 'z '
+            $completions | Should -Contain 'prefixABC'
+            $completions | Should -Contain 'prefixDEF'
+            $completions | Should -Contain 'notthisGHI'
+            $completions | Should -Contain 'notthisJKL'
         }
     }
 }

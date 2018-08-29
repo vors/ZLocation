@@ -66,8 +66,16 @@ Update-ZLocation $pwd
 #
 # Tab completion.
 #
-if (Test-Path Function:\TabExpansion) {
-    Rename-Item Function:\TabExpansion PreZTabExpansion
+if(Get-Command -Name Register-ArgumentCompleter -ErrorAction Ignore) {
+    Register-ArgumentCompleter -CommandName Set-ZLocation -ParameterName match -ScriptBlock {
+        param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+        # Omit first item (command name) and empty strings
+        $i = $commandAst.CommandElements.Count
+        [string[]]$query = if($i -gt 1) {
+            $commandAst.CommandElements[1..($i-1)] | ForEach-Object { $_.toString()}
+        }
+        Find-Matches (Get-ZLocation) $query | Get-EscapedPath
+    }
 }
 
 function Get-EscapedPath
@@ -91,20 +99,6 @@ function Get-EscapedPath
     }
 }
 
-function global:TabExpansion($line, $lastWord) {
-    switch -regex ($line) {
-        $TabExpansionRegex {
-        # "^(Set-ZLocation|z|j|pineapple) .*" {
-            $arguments = $line -split ' ' | Where { $_.length -gt 0 } | select -Skip 1
-            Find-Matches (Get-ZLocation) $arguments | Get-EscapedPath
-        }
-        default {
-            if (Test-Path Function:\PreZTabExpansion) {
-                PreZTabExpansion $line $lastWord
-            }
-        }
-    }
-}
 #
 # End of tab completion.
 #
@@ -115,21 +109,21 @@ function Pop-ZLocation
     Pop-Location
 }
 
-function Set-ZLocation()
+function Set-ZLocation([Parameter(ValueFromRemainingArguments)]$match)
 {
     Register-PromptHook
 
-    if (-not $args) {
-        $args = @()
+    if (-not $match) {
+        $match= @()
     }
 
     # Special case to enable Pop-Location.
-    if (($args.Count -eq 1) -and ($args[0] -eq '-')) {
+    if (($match.Count -eq 1) -and ($match[0] -eq '-')) {
         Pop-ZLocation
         return
     }
 
-    $matches = Find-Matches (Get-ZLocation) $args
+    $matches = Find-Matches (Get-ZLocation) $match
     $pushDone = $false
     foreach ($match in $matches) {
         if (Test-path $match) {
@@ -149,19 +143,6 @@ function Set-ZLocation()
 Register-PromptHook
 
 Set-Alias -Name z -Value Set-ZLocation
-
-# Create a list of aliases for Set-Zlocation, and add Set-Zlocation
-$szlAliases = @(
-    foreach ($alias in Get-Alias -Definition Set-ZLocation) {
-        [regex]::Escape($alias.Name)
-    }
-
-    'Set-ZLocation'
-)
-
-
-# Make a regex to match starting a string with an alias followed by a space
-$TabExpansionRegex = '^('+$($szlAliases -join '|')+') '
 
 Export-ModuleMember -Function @('Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
 # export this function to make it accessible from prompt
