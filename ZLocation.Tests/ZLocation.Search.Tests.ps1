@@ -1,7 +1,5 @@
 Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
 
-. "$PSScriptRoot/_mocks.ps1"
-
 if($IsWindows -eq $null) {
     $IsWindows = $true
 }
@@ -86,8 +84,26 @@ Describe 'Find-Matches filters results correctly' {
             $adminPath = '/admin'
         }
 
-        It 'Use leaf matches' {
+        It 'Uses leaf match' {
             Find-Matches $data 'adm' | Should Be $adminPath
+        }
+    }
+
+    Context 'Prefer prefix over weight' {
+        if($IsWindows) {
+            $fooPath = 'C:\foo'
+            $afooPath = 'C:\afoo'
+        } else {
+            $fooPath = '/foo'
+            $afooPath = '/afoo'
+        }
+        $data = @{
+            $fooPath = 1.0
+            $afooPath = 1000.0
+        }
+
+        It 'Uses prefix match' {
+            Find-Matches $data 'fo' | Should Be @($fooPath, $afooPath)
         }
     }
 }
