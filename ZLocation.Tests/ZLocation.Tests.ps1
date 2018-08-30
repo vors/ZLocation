@@ -1,9 +1,9 @@
-# This is integration tests.
+# Integration tests.
 
-# -Force re-import nested modules as well
+# Maybe -Force re-import nested modules too?
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Storage.psm1 -Force
 #Import-Module $PSScriptRoot\..\ZLocation\ZLocation.Search.psm1 -Force
-Import-Module $PSScriptRoot\..\ZLocation\ZLocation.psm1 -Force
+Import-Module $PSScriptRoot\..\ZLocation\ZLocation.psd1 -Force
 
 . "$PSScriptRoot/_mocks.ps1"
 
