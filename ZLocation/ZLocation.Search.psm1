@@ -5,17 +5,41 @@ if($IsWindows -eq $null) { $IsWindows = $true }
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
     $hash = $hash.Clone()
-    foreach ($key in ($hash.GetEnumerator() | %{$_.Name})) 
+    foreach ($key in ($hash.GetEnumerator() | %{$_.Name}))
     {
-        if (-not (Test-FuzzyMatch $key $query)) 
+        if (-not (Test-FuzzyMatch $key $query))
         {
             $hash.Remove($key)
         }
     }
-    $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
+
+    if ($query -ne $null -and $query.Length -gt 0) {
+        $lowerPrefix = $query[-1].ToLower()
+        # we should prefer paths that start with the query over paths with bigger weight
+        # that don't.
+        # i.e. if we have
+        # /foo = 1.0
+        # /afoo = 2.0
+        # and query is "fo", we should prefer /foo
+        $res = $hash.GetEnumerator() | % {
+            New-Object -TypeName PSCustomObject -Property @{
+                Name=$_.Name
+                Value=$_.Value
+                Starts=[int](Start-WithPrefix -Path $_.Name -lowerPrefix $lowerPrefix)
+            }
+        } | Sort-Object -Property Starts, Value -Descending
+    } else {
+        $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
+    }
+
     if ($res) {
         $res | %{$_.Name}
     }
+}
+
+function Start-WithPrefix([string]$Path, [string]$lowerPrefix) {
+    $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
+    return $lowerLeaf.StartsWith($lowerPrefix)
 }
 
 function Test-FuzzyMatch([string]$path, [string[]]$query)
@@ -40,11 +64,11 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
         {
             return $false
         }
-    }   
-    
+    }
+
     # after tab expansion, we get desired full path as a last query element.
     # tab expansion can come from our code, then it will represent the full path.
-    # It also can come from the standard tab expansion (when our doesn't return anything), which is file system based. 
+    # It also can come from the standard tab expansion (when our doesn't return anything), which is file system based.
     # It can produce relative paths.
 
     $rootQuery = $query[$n-1]
@@ -56,8 +80,8 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
             $rootQuery = (Resolve-Path $rootQueryCandidate).Path
         }
     }
-    
-    if ([System.IO.Path]::IsPathRooted($rootQuery)) 
+
+    if ([System.IO.Path]::IsPathRooted($rootQuery))
     {
         # doing a tweak to handle 'C:' and 'C:\' cases correctly.
         if ($IsWindows -and ($rootQuery.Length) -eq 2 -and ($rootQuery[-1] -eq ':'))
@@ -73,7 +97,7 @@ function Test-FuzzyMatch([string]$path, [string[]]$query)
     }
 
     $leaf = Split-Path -Leaf $path
-    return (contains -left $leaf -right $query[$n-1]) 
+    return (contains -left $leaf -right $query[$n-1])
 }
 
 Export-ModuleMember -Function Find-Matches
