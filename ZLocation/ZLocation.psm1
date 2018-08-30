@@ -67,14 +67,16 @@ Update-ZLocation $pwd
 # Tab completion.
 #
 if(Get-Command -Name Register-ArgumentCompleter -ErrorAction Ignore) {
-    Register-ArgumentCompleter -CommandName Set-ZLocation -ParameterName match -ScriptBlock {
-        param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
-        # Omit first item (command name) and empty strings
-        $i = $commandAst.CommandElements.Count
-        [string[]]$query = if($i -gt 1) {
-            $commandAst.CommandElements[1..($i-1)] | ForEach-Object { $_.toString()}
+    'Set-ZLocation', 'Invoke-ZLocation' | % {
+        Register-ArgumentCompleter -CommandName $_ -ParameterName match -ScriptBlock {
+            param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+            # Omit first item (command name) and empty strings
+            $i = $commandAst.CommandElements.Count
+            [string[]]$query = if($i -gt 1) {
+                $commandAst.CommandElements[1..($i-1)] | ForEach-Object { $_.toString()}
+            }
+            Find-Matches (Get-ZLocation) $query | Get-EscapedPath
         }
-        Find-Matches (Get-ZLocation) $query | Get-EscapedPath
     }
 }
 
@@ -109,7 +111,7 @@ function Pop-ZLocation
     Pop-Location
 }
 
-function Set-ZLocation([Parameter(ValueFromRemainingArguments)]$match)
+function Set-ZLocation([Parameter(ValueFromRemainingArguments)][string[]]$match)
 {
     Register-PromptHook
 
@@ -125,14 +127,14 @@ function Set-ZLocation([Parameter(ValueFromRemainingArguments)]$match)
 
     $matches = Find-Matches (Get-ZLocation) $match
     $pushDone = $false
-    foreach ($match in $matches) {
-        if (Test-path $match) {
-            Push-Location $match
+    foreach ($m in $matches) {
+        if (Test-path $m) {
+            Push-Location $m
             $pushDone = $true
             break
         } else {
-            Write-Warning "There is no path $match on the file system. Removing obsolete data from database."
-            Remove-ZLocation $match
+            Write-Warning "There is no path $m on the file system. Removing obsolete data from database."
+            Remove-ZLocation $m
         }
     }
     if (-not $pushDone) {
@@ -140,10 +142,38 @@ function Set-ZLocation([Parameter(ValueFromRemainingArguments)]$match)
     }
 }
 
+<#
+    This is the main entry point in the interactive usage of ZLocation.
+    It's intended to be used as an alias z
+
+    Usage:
+        z - prints available directories
+        z -l foo - prints available directories scoped to foo query
+        z foo - jumps into the location that matches foo
+#>
+function Invoke-ZLocation
+{
+    param(
+        [Parameter(ValueFromRemainingArguments)][string[]]$match
+    )
+
+    if ($match -eq $null) {
+        Get-ZLocation
+        return
+    }
+
+    if ($match.Length -gt 0 -and $match[0] -eq '-l') {
+        Get-ZLocation ($match | Select-Object -Skip 1)
+        return
+    }
+
+    Set-ZLocation $match
+}
+
 Register-PromptHook
 
-Set-Alias -Name z -Value Set-ZLocation
+Set-Alias -Name z -Value Invoke-ZLocation
 
-Export-ModuleMember -Function @('Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
+Export-ModuleMember -Function @('Invoke-ZLocation', 'Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation
