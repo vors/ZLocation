@@ -43,6 +43,13 @@ function Get-ZLocationDatabaseFilePath
 {
     return (Join-Path $HOME 'z-location.db')
 }
+# Returns path to legacy ZLocation backup file.
+function Get-ZLocationLegacyBackupFilePath
+{
+    if($env:USERPROFILE -ne $null) {
+        Join-Path $env:USERPROFILE 'z-location.txt'
+    }
+}
 
 <#
  Open database, invoke a database operation, and close the database afterwards.
@@ -62,12 +69,24 @@ function dboperation($private:scriptblock) {
     }
 }
 
+$dbExists = Test-Path (Get-ZLocationDatabaseFilePath)
+$legacyBackupPath = Get-ZLocationLegacyBackupFilePath
+$legacyBackupExists = ($legacyBackupPath -ne $null) -and (Test-Path $legacyBackupPath)
+
 # Create empty db, collection, and index if it doesn't exist
 dboperation {
     $collection.EnsureIndex('path')
 }
 
 $service = [Service]::new()
+
+# Migrate legacy backup into database if appropriate
+if((-not $dbExists) -and $legacyBackupExists) {
+    Get-Content $legacyBackupPath | Filter-Object { $_ -ne $null } | ForEach-Object {
+        $split = $_ -split '`t'
+        $service.add($split[0], $split[1])
+    }
+}
 
 Function Get-ZService {
     ,$service
