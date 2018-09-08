@@ -58,7 +58,7 @@ function Get-ZLocationLegacyBackupFilePath
  Exposes $db and $collection variables for use by the $scriptblock
 #>
 function dboperation($private:scriptblock) {
-    $Private:Mode = if( $IsMacOS ) { 'Exclusive' } else { 'Shared' }
+    $Private:Mode = if( Get-Variable IsMacOS -ErrorAction SilentlyContinue ) { 'Exclusive' } else { 'Shared' }
     # $db and $collection will be in-scope within $scriptblock
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
     $collection = Get-DBCollection $db 'location'
@@ -82,8 +82,9 @@ $service = [Service]::new()
 
 # Migrate legacy backup into database if appropriate
 if((-not $dbExists) -and $legacyBackupExists) {
-    Get-Content $legacyBackupPath | Filter-Object { $_ -ne $null } | ForEach-Object {
-        $split = $_ -split '`t'
+    Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
+    Get-Content $legacyBackupPath | Where-Object { $_ -ne $null } | ForEach-Object {
+        $split = $_ -split "`t"
         $service.add($split[0], $split[1])
     }
 }
