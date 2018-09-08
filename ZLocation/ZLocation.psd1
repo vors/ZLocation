@@ -12,7 +12,7 @@
 RootModule = 'ZLocation.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.3.0'
+ModuleVersion = '1.0.0'
 
 # ID used to uniquely identify this module
 GUID = '18e8ca17-7f67-4f1c-85ff-159373bf66f5'
@@ -20,11 +20,8 @@ GUID = '18e8ca17-7f67-4f1c-85ff-159373bf66f5'
 # Author of this module
 Author = 'Sergei Vorobev'
 
-# Company or vendor of this module
-CompanyName = 'Microsoft'
-
 # Copyright statement for this module
-Copyright = '(c) 2015 Sergei Vorobev. All rights reserved.'
+Copyright = '(c) 2015-2018 Sergei Vorobev. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'ZLocation is the new Jump-Location. A `cd` that learns.'
