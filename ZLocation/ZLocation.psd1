@@ -48,7 +48,7 @@ Description = 'ZLocation is the new Jump-Location. A `cd` that learns.'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @("$PSScriptRoot/LiteDB/LiteDB.dll")
+RequiredAssemblies = @("LiteDB\LiteDB.dll")
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
