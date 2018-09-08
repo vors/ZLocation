@@ -43,6 +43,13 @@ function Get-ZLocationDatabaseFilePath
 {
     return (Join-Path $HOME 'z-location.db')
 }
+# Returns path to legacy ZLocation backup file.
+function Get-ZLocationLegacyBackupFilePath
+{
+    if($env:USERPROFILE -ne $null) {
+        Join-Path $env:USERPROFILE 'z-location.txt'
+    }
+}
 
 <#
  Open database, invoke a database operation, and close the database afterwards.
@@ -51,7 +58,7 @@ function Get-ZLocationDatabaseFilePath
  Exposes $db and $collection variables for use by the $scriptblock
 #>
 function dboperation($private:scriptblock) {
-    $Private:Mode = if( $IsMacOS ) { 'Exclusive' } else { 'Shared' }
+    $Private:Mode = if( Get-Variable IsMacOS -ErrorAction SilentlyContinue ) { 'Exclusive' } else { 'Shared' }
     # $db and $collection will be in-scope within $scriptblock
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
     $collection = Get-DBCollection $db 'location'
@@ -62,12 +69,25 @@ function dboperation($private:scriptblock) {
     }
 }
 
+$dbExists = Test-Path (Get-ZLocationDatabaseFilePath)
+$legacyBackupPath = Get-ZLocationLegacyBackupFilePath
+$legacyBackupExists = ($legacyBackupPath -ne $null) -and (Test-Path $legacyBackupPath)
+
 # Create empty db, collection, and index if it doesn't exist
 dboperation {
     $collection.EnsureIndex('path')
 }
 
 $service = [Service]::new()
+
+# Migrate legacy backup into database if appropriate
+if((-not $dbExists) -and $legacyBackupExists) {
+    Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
+    Get-Content $legacyBackupPath | Where-Object { $_ -ne $null } | ForEach-Object {
+        $split = $_ -split "`t"
+        $service.add($split[0], $split[1])
+    }
+}
 
 Function Get-ZService {
     ,$service
