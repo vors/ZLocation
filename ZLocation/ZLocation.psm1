@@ -54,7 +54,7 @@ Update-ZLocation $pwd
 
 '@
         $newPrompt += $oldPrompt
-        $function:prompt = [ScriptBlock]::Create($newPrompt)
+        Set-Content -Force -Path function:\prompt -Value ([ScriptBlock]::Create($newPrompt))
     }
 }
 
