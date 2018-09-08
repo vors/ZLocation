@@ -19,7 +19,7 @@ ZLocation keeps track of your `$pwd` (current folder).
 Once visited, folder become known to ZLocation.
 You can `cd` with just a hint of the path!
 
-The full command name is `Set-ZLocation`, but in examples I use alias `z`. 
+The full command name is `Invoke-ZLocation`, but in examples I use alias `z`.
 It's all about navigation speed, isn't it?
 
 ```
@@ -30,11 +30,19 @@ PS C:\dev\azure-sdk-tools\src\ServiceManagement\Compute\Commands.ServiceManageme
 PS C:\dev\ZLocation\ZLocation.Tests>
 ```
 
+### List known locations
+
+`z` without arguments will list all the known locations and their weights (short-cut for `Get-ZLocation`)
+
+To see all locations matched to a query `foo` use `z -l foo`.
+
 Goals / Key features
 --------------------
 
 *  Support for multiple PS sessions.
+*  Good built-in ranking algorithm.
 *  Customizable matching algorithm and weight function.
+*  Works on Windows, Linux and MacOS.
 
 ## Install
 Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/ZLocation/)
