@@ -43,6 +43,12 @@ Describe 'ZLocation.Storage' {
             $path2 | Should -BeIn $h.Keys # Fails in Pester 3 - no BeIn
         }
 
+        It 'can handle multiple paths differing only by capitalization' {
+            Add-ZWeight -path 'FOO' -weight 1
+            Add-ZWeight -path 'foo' -weight 1
+            Get-ZLocation
+        }
+
     } finally {
 
         It 'can remove path' {
