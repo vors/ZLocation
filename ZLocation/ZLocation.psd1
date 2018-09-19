@@ -64,16 +64,25 @@ RequiredAssemblies = @("LiteDB\LiteDB.dll")
 # NestedModules = @("ZLocation.Storage.psm1", "ZLocation.Search.psm1")
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = @(
+    'Get-ZLocation',
+    'Invoke-ZLocation',
+    'Pop-ZLocation',
+    'Remove-ZLocation',
+    'Set-ZLocation',
+    'Update-ZLocation'
+)
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = @()
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = @()
 
 # Aliases to export from this module
-AliasesToExport = '*'
+AliasesToExport = @(
+    'z'
+)
 
 # List of all modules packaged with this module
 # ModuleList = @()
