@@ -6,7 +6,7 @@ Import-Module (Join-Path $PSScriptRoot 'ZLocation.Search.psm1')
 function Get-ZLocation($Match)
 {
     $service = Get-ZService
-    $hash = @{}
+    $hash = [Collections.HashTable]::new()
     foreach ($item in $service.Get())
     {
         $hash.add($item.path, $item.weight)

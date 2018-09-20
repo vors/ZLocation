@@ -10,6 +10,8 @@ Describe 'ZLocation.Storage' {
 
         $path = [guid]::NewGuid().Guid
         $path2 = [guid]::NewGuid().Guid
+        $path3 = 'FOO'
+        $path4 = 'foo'
 
         It 'can add weight' {
             $w1 = 6.6
@@ -43,10 +45,18 @@ Describe 'ZLocation.Storage' {
             $path2 | Should -BeIn $h.Keys # Fails in Pester 3 - no BeIn
         }
 
+        It 'can handle multiple paths differing only by capitalization' {
+            Add-ZWeight -path $path3 -weight 1
+            Add-ZWeight -path $path4 -weight 1
+            Get-ZLocation
+        }
+
     } finally {
 
         It 'can remove path' {
             Remove-ZLocation -path $path2
+            Remove-ZLocation -path $path3
+            Remove-ZLocation -path $path4
             $h = Get-ZLocation
             $h.Count | Should Be ($originalCount + 1)
 
