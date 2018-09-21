@@ -157,13 +157,18 @@ function Invoke-ZLocation
         [Parameter(ValueFromRemainingArguments)][string[]]$match
     )
 
-    if ($match -eq $null) {
-        Get-ZLocation
-        return
+    $locations = $null
+    if ($null -eq $match) {
+        $locations = Get-ZLocation
+    }
+    elseif (($match.Length -gt 0) -and ($match[0] -eq '-l')) {
+        $locations = Get-ZLocation ($match | Select-Object -Skip 1)
     }
 
-    if ($match.Length -gt 0 -and $match[0] -eq '-l') {
-        Get-ZLocation ($match | Select-Object -Skip 1)
+    if ($locations) {
+        $locations |
+            ForEach-Object {$_.GetEnumerator()} |
+            ForEach-Object {[PSCustomObject]@{Weight = $_.Value; Path = $_.Name}}
         return
     }
 
