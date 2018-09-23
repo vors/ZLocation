@@ -42,19 +42,49 @@ function Update-ZLocation([string]$path)
     Add-ZWeight $path 1.0
 }
 
-function Register-PromptHook
+function IsLocationChangedActionAvailable {
+    param()
+
+    ($PSVersionTable.PSVersion.Major -ge 7) -or
+    (($PSVersionTable.PSVersion.Major -eq 6) -and ($PSVersionTable.PSVersion.Minor -ge 1))
+}
+
+function Register-LocationChangedHook
 {
     param()
 
-    $oldPrompt = Get-Content function:\prompt
-    if( $oldPrompt -notlike '*Update-ZLocation*' )
-    {
-        $newPrompt = @'
-Update-ZLocation $pwd
+    if (IsLocationChangedActionAvailable) {
+        # On PS Core >= 6.1, use the new LocationChangedAction event handler to update the zlocation
+        $script:LocationChangedActionPrevHandler = $ExecutionContext.InvokeCommand.LocationChangedAction
+        $ExecutionContext.InvokeCommand.LocationChangedAction = {
+            param($sender, $eventArgs)
+            Update-ZLocation $eventArgs.NewPath
+            if ($LocationChangedActionPrevHandler) {
+                $LocationChangedActionPrevHandler.Invoke($sender, $eventArgs)
+            }
+        }.GetNewClosure()
+    }
+    elseif (-not (Test-Path function:\global:ZlocationOrigPrompt)) {
+        # On PowerShell < 6.1, insert a call to Update-Zlocation in the prompt function.
+        Copy-Item function:\prompt function:\global:ZlocationOrigPrompt
+        $global:ZLocationPromptScriptBlock = {
+            Update-ZLocation $pwd
+            ZLocationOrigPrompt
+        }
 
-'@
-        $newPrompt += $oldPrompt
-        Set-Content -Force -Path function:\prompt -Value ([ScriptBlock]::Create($newPrompt))
+        Set-Content -Force -Path function:\prompt -Value $global:ZLocationPromptScriptBlock
+    }
+}
+
+# On removal/unload of the module, restore original prompt or LocationChangedAction event handler.
+$ExecutionContext.SessionState.Module.OnRemove = {
+    if (IsLocationChangedActionAvailable) {
+        $ExecutionContext.InvokeCommand.LocationChangedAction = $LocationChangedActionPrevHandler
+    }
+    elseif ((Get-Command prompt -CommandType Function).ScriptBlock -eq $global:ZLocationPromptScriptBlock) {
+        Copy-Item function:\global:ZlocationOrigPrompt function:\global:prompt
+        Remove-Item function:\ZlocationOrigPrompt
+        Remove-Variable ZLocationPromptScriptBlock -Scope Global
     }
 }
 
@@ -113,7 +143,7 @@ function Pop-ZLocation
 
 function Set-ZLocation([Parameter(ValueFromRemainingArguments)][string[]]$match)
 {
-    Register-PromptHook
+    Register-LocationChangedHook
 
     if (-not $match) {
         $match= @()
@@ -175,7 +205,7 @@ function Invoke-ZLocation
     Set-ZLocation $match
 }
 
-Register-PromptHook
+Register-LocationChangedHook
 
 Set-Alias -Name z -Value Invoke-ZLocation
 
