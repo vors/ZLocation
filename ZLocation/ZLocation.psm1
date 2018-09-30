@@ -46,16 +46,23 @@ function Register-PromptHook
 {
     param()
 
-    $oldPrompt = Get-Content function:\prompt
-    if( $oldPrompt -notlike '*Update-ZLocation*' )
-    {
-        $newPrompt = @'
-Update-ZLocation $pwd
+    # Insert a call to Update-Zlocation in the prompt function but only once.
+    if (-not (Test-Path function:\global:ZlocationOrigPrompt)) {
+        Copy-Item function:\prompt function:\global:ZlocationOrigPrompt
+        $global:ZLocationPromptScriptBlock = {
+            Update-ZLocation $pwd
+            ZLocationOrigPrompt
+        }
 
-'@
-        $newPrompt += $oldPrompt
-        Set-Content -Force -Path function:\prompt -Value ([ScriptBlock]::Create($newPrompt))
+        Set-Content -Path function:\prompt -Value $global:ZLocationPromptScriptBlock -Force
     }
+}
+
+# On removal/unload of the module, restore original prompt or LocationChangedAction event handler.
+$ExecutionContext.SessionState.Module.OnRemove = {
+    Copy-Item function:\global:ZlocationOrigPrompt function:\global:prompt
+    Remove-Item function:\ZlocationOrigPrompt
+    Remove-Variable ZLocationPromptScriptBlock -Scope Global
 }
 
 #
