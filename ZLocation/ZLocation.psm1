@@ -157,18 +157,24 @@ function Invoke-ZLocation
         [Parameter(ValueFromRemainingArguments)][string[]]$match
     )
 
+    $sortProperty = "Path"
+    $sortDescending = $false
+
     $locations = $null
     if ($null -eq $match) {
         $locations = Get-ZLocation
     }
     elseif (($match.Length -gt 0) -and ($match[0] -eq '-l')) {
         $locations = Get-ZLocation ($match | Select-Object -Skip 1)
+        $sortProperty = "Weight"
+        $sortDescending = $true
     }
 
     if ($locations) {
         $locations |
             ForEach-Object {$_.GetEnumerator()} |
-            ForEach-Object {[PSCustomObject]@{Weight = $_.Value; Path = $_.Name}}
+            ForEach-Object {[PSCustomObject]@{Weight = $_.Value; Path = $_.Name}} |
+            Sort-Object -Property $sortProperty -Descending:$sortDescending
         return
     }
 
