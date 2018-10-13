@@ -73,7 +73,8 @@ function dboperation($private:scriptblock) {
                 Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
             }
         }
-        throw 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation and provide $error[1]'
+        Write-Error $error[0]
+        throw 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation'
     } finally {
         $db.dispose()
     }
