@@ -63,7 +63,17 @@ function dboperation($private:scriptblock) {
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
     $collection = Get-DBCollection $db 'location'
     try {
-        & $private:scriptblock
+        # retry logic: on Mac we may not be able to execute the read concurrently
+        for ($__i=0; $__i -lt 5; $__i++) {
+            try {
+                & $private:scriptblock
+                return
+            } catch {
+                $rand = Get-Random 100
+                Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
+            }
+        }
+        throw 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation and provide $error[1]'
     } finally {
         $db.dispose()
     }
