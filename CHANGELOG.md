@@ -1,6 +1,13 @@
 CHANGELOG
 -------------
 
+## 1.1.0
+
+* Fix problems with non-unified casing #62 (thanks @cspotcode)
+* Better representation for db entries (thanks @rkeithhill)
+* Graceful install/remove for the prompt hook (thanks @rkeithhill)
+* Add retry and backoff logic to better support multiply db connections on Mac.
+
 ## 1.0.0
 
 * Make ZLocation work with `cmder`
