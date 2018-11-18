@@ -58,7 +58,7 @@ function Get-ZLocationLegacyBackupFilePath
  Exposes $db and $collection variables for use by the $scriptblock
 #>
 function dboperation($private:scriptblock) {
-    $Private:Mode = if( Get-Variable IsMacOS -ErrorAction SilentlyContinue ) { 'Exclusive' } else { 'Shared' }
+    $Private:Mode = if (Get-Variable IsMacOS -ErrorAction Ignore) { 'Exclusive' } else { 'Shared' }
     # $db and $collection will be in-scope within $scriptblock
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
     $collection = Get-DBCollection $db 'location'
