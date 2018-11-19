@@ -1,6 +1,6 @@
 Set-StrictMode -Version Latest
 
-if((Get-Variable IsWindows -ErrorAction SilentlyContinue) -eq $null) { $IsWindows = $true }
+if ((Get-Variable IsWindows -ErrorAction Ignore) -eq $null) { $IsWindows = $true }
 
 function Find-Matches([hashtable]$hash, [string[]]$query)
 {
