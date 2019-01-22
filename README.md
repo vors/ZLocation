@@ -64,6 +64,11 @@ If you want to display some additional information about ZLocation on start-up, 
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
+### Note
+
+ZLocation alternates your `prompt` function to track the location.
+If you have a custom prompt function in `$profile`, you should place `Import-Module ZLocation` **after** the prompt customization.
+
 License
 -------
 
