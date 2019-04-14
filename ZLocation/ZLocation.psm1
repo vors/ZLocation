@@ -145,7 +145,12 @@ function Set-ZLocation([Parameter(ValueFromRemainingArguments)][string[]]$match)
         }
     }
     if (-not $pushDone) {
-        Write-Warning "Cannot find matching location"
+        if (($match.Count -eq 1) -and (Test-Path "$match")) {
+            Write-Debug "No matches for $match, attempting Push-Location"
+            Push-Location "$match"
+        } else {
+            Write-Warning "Cannot find matching location"
+        }
     }
 }
 
