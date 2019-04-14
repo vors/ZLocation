@@ -39,6 +39,24 @@ Describe 'ZLocation' {
                 Remove-ZLocation $newDirFullPath
             }
         }
+
+        It 'can navigate to an unvisited directory' {
+            try {
+                $newdirectory = [guid]::NewGuid().Guid
+                $curDirFullPath = ($pwd).Path
+                mkdir $newdirectory
+                $newDirFullPath = Join-Path $curDirFullPath $newdirectory
+
+                # do the jump
+                z $newdirectory
+                ($pwd).Path | Should Be $newDirFullPath
+            }
+            finally {
+                cd $curDirFullPath
+                Remove-Item -rec -force $newdirectory
+                Remove-ZLocation $newDirFullPath
+            }
+        }
     }
 
     Context 'tab completion' {
