@@ -89,7 +89,7 @@ Describe 'Find-Matches filters results correctly' {
         }
     }
 
-    Context 'Prefer prefix over weight' {
+    Context 'Prefix matching' {
         if($IsWindows) {
             $fooPath = 'C:\foo'
             $afooPath = 'C:\afoo'
@@ -97,12 +97,20 @@ Describe 'Find-Matches filters results correctly' {
             $fooPath = '/foo'
             $afooPath = '/afoo'
         }
-        $data = @{
-            $fooPath = 1.0
-            $afooPath = 1000.0
+
+        It 'Prefers weight over prefix' {
+            $data = @{
+                $fooPath  = 1.0
+                $afooPath = 1000.0
+            }
+            Find-Matches $data 'fo' | Should Be @($afooPath, $fooPath)
         }
 
-        It 'Uses prefix match' {
+        It 'Uses prefix to decide between equal weights' {
+            $data = @{
+                $fooPath  = 1.0
+                $afooPath = 1.0
+            }
             Find-Matches $data 'fo' | Should Be @($fooPath, $afooPath)
         }
     }

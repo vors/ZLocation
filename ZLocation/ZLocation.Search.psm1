@@ -27,7 +27,7 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
                 Value=$_.Value
                 Starts=[int](Start-WithPrefix -Path $_.Name -lowerPrefix $lowerPrefix)
             }
-        } | Sort-Object -Property Starts, Value -Descending
+        } | Sort-Object -Property Value, Starts -Descending
     } else {
         $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
     }
