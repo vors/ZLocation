@@ -1,6 +1,11 @@
 CHANGELOG
 -------------
 
+## 1.2.0
+
+* Move to unvisited directories if one is provided (#80)
+* Fix - using ZLocation on Windows PowerShell creates errors in $Error (#75)
+
 ## 1.1.0
 
 * Fix problems with non-unified casing #62 (thanks @cspotcode)
