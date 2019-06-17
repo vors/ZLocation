@@ -190,7 +190,7 @@ function Invoke-ZLocation
         return
     }
 
-    Set-ZLocation $match
+    Set-ZLocation -match $match
 }
 
 Register-PromptHook
