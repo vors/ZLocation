@@ -6,8 +6,13 @@ class Service {
     [Collections.Generic.IEnumerable[Location]] Get() {
         return (dboperation {
             # Return an enumerator of all location entries
-            [Location[]]$arr = DBFind $collection ([LiteDB.Query]::All()) ([Location])
-            ,$arr
+            try {
+                [Location[]]$arr = DBFind $collection ([LiteDB.Query]::All()) ([Location])
+                , $arr
+            }
+            catch [System.InvalidCastException] {
+                throw [System.InvalidCastException] "Caught InvalidCastException when reading db, probably [LiteDB.ObjectId] entry present."
+            }
         })
     }
     [void] Add([string]$path, [double]$weight) {
@@ -68,7 +73,7 @@ function dboperation($private:scriptblock) {
             try {
                 & $private:scriptblock
                 return
-            } catch {
+            } catch [System.IO.IOException] {
                 $rand = Get-Random 100
                 Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
             }
