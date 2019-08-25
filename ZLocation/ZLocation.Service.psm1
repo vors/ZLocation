@@ -11,7 +11,21 @@ class Service {
                 , $arr
             }
             catch [System.InvalidCastException] {
-                throw [System.InvalidCastException] "Caught InvalidCastException when reading db, probably [LiteDB.ObjectId] entry present."
+                Write-Warning "Caught InvalidCastException when reading db, probably [LiteDB.ObjectId] entry present."
+                $oidquery = [LiteDB.Query]::Where('_id', {$args -like '{"$oid":"*"}'})
+                $problementries = (,$collection.Find($oidquery))
+                if ($problementries.Count -gt 0) {
+                    Write-Warning "Found $($problementries.Count) problem entries, attempting to remove..."
+                    $problementries | Write-Debug
+                    try {
+                        DBDelete $collection $oidquery | Out-Null
+                        Write-Warning 'Problem entries successfully removed, please repeat your command.'
+                    } catch {
+                        Write-Error 'Problem entries could not be removed.'
+                    }
+                } else {
+                        Write-Error 'No problem entries found, please open an issue on https://github.com/vors/ZLocation'
+                }
             }
         })
     }
