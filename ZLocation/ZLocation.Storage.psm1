@@ -23,7 +23,11 @@ function Get-ZLocation($Match)
     return $hash
 }
 
-function Add-ZWeight([string]$path, [double]$weight) {
+function Add-ZWeight {
+    param (
+        [Parameter(Mandatory=$true)] [string]$Path,
+        [Parameter(Mandatory=$true)] [double]$Weight
+    )
     $service = Get-ZService
     $service.Add($path, $weight)
 }
