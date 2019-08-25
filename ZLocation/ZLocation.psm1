@@ -37,8 +37,11 @@ function Update-ZLocation([string]$path)
 (Get-Variable pwd).attributes.Add((new-object ValidateScript { Update-ZLocation $_.Path; return $true }))
 #>
 
-function Update-ZLocation([string]$path)
+function Update-ZLocation
 {
+    param (
+        [Parameter(Mandatory=$true)] [string]$Path
+    )
     Add-ZWeight $path 1.0
 }
 
