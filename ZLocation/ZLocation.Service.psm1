@@ -76,7 +76,10 @@ function Get-ZLocationLegacyBackupFilePath
  See: https://github.com/mbdavid/LiteDB/wiki/Concurrency
  Exposes $db and $collection variables for use by the $scriptblock
 #>
-function dboperation($private:scriptblock) {
+function dboperation {
+    param (
+        [Parameter(Mandatory=$true)] $private:scriptblock
+    )
     $Private:Mode = if (Get-Variable IsMacOS -ErrorAction Ignore) { 'Exclusive' } else { 'Shared' }
     # $db and $collection will be in-scope within $scriptblock
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
