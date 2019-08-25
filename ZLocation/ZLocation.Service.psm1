@@ -74,12 +74,15 @@ function dboperation($private:scriptblock) {
                 & $private:scriptblock
                 return
             } catch [System.IO.IOException] {
-                $rand = Get-Random 100
-                Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
+                # The process cannot access the file '~\z-location.db' because it is being used by another process.
+                if ($__i -lt 4 ) {
+                    $rand = Get-Random 100
+                    Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
+                } else {
+                    throw [System.IO.IOException] 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation'
+                }
             }
         }
-        Write-Error $error[0]
-        throw 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation'
     } finally {
         $db.dispose()
     }
