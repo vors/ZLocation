@@ -3,7 +3,10 @@ Set-StrictMode -Version Latest
 Import-Module -Prefix DB (Join-Path $PSScriptRoot 'ZLocation.LiteDB.psd1')
 
 class Service {
-    [Collections.Generic.IEnumerable[Location]] Get() {
+}
+
+# Get the locations in the database and their weights as [Location]s
+function Get-ZDBLocation {
         return (dboperation {
             # Return an enumerator of all location entries
             try {
@@ -28,7 +31,6 @@ class Service {
                 }
             }
         })
-    }
 }
 
 # Increase the weight of a location in the database, adding it if not present.

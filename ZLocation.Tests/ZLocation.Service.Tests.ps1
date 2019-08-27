@@ -23,22 +23,21 @@ Describe 'ZLocation.Service' {
             if (-not (Test-ZLocationDBUnlocked)) {throw 'Database is locked, aborting tests'}
 
             $path = [guid]::NewGuid().Guid 
-            $service = Get-ZService
-            $count = $service.get() | Measure-Object | Select-Object -ExpandProperty Count
+            $count = Get-ZDBLocation| Measure-Object | Select-Object -ExpandProperty Count
 
             It 'Adds and retrieves a location' {
                 Update-ZDBLocation -Path $path
-                $service.get() | Should -HaveCount ($count + 1)
+                Get-ZDBLocation | Should -HaveCount ($count + 1)
                 $l = [Location]::new()
                 $l.path = $path
                 $l.weight = 1
-                $service.get() | Where-Object { $_.Path -eq $path } | Should -HaveCount 1
+                Get-ZDBLocation | Where-Object { $_.Path -eq $path } | Should -HaveCount 1
             }
 
             It 'Adds and removes a location' {
                 Update-ZDBLocation -Path $path
                 Remove-ZDBLocation $path
-                $service.get() | Measure-Object | Select-Object -ExpandProperty Count | Should -Be $count
+                Get-ZDBLocation | Measure-Object | Select-Object -ExpandProperty Count | Should -Be $count
             }
         }
     }
@@ -66,8 +65,7 @@ Describe 'ZLocation.Service' {
             It "can remove malformed location entries" {
                 # Ensure nothing else can be connecting to $db to placate AppVeyor.
                 $db.Dispose()
-                $service = Get-ZService
-                $service.get()
+                Get-ZDBLocation
                 $db = [LiteDB.LiteDatabase]::new($connectionString)
                 $collection = $db.GetCollection('Location')
                 $malformedEntries = $collection.Find($oidquery)
