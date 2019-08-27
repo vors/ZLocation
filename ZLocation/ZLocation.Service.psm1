@@ -2,9 +2,6 @@ Set-StrictMode -Version Latest
 
 Import-Module -Prefix DB (Join-Path $PSScriptRoot 'ZLocation.LiteDB.psd1')
 
-class Service {
-}
-
 # Get the locations in the database and their weights as [Location]s
 function Get-ZDBLocation {
         return (dboperation {
@@ -139,8 +136,6 @@ dboperation {
     $collection.EnsureIndex('path')
 }
 
-$service = [Service]::new()
-
 # Migrate legacy backup into database if appropriate
 if((-not $dbExists) -and $legacyBackupExists) {
     Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
@@ -148,8 +143,4 @@ if((-not $dbExists) -and $legacyBackupExists) {
         $split = $_ -split "`t"
         Update-ZDBLocation $split[0] $split[1]
     }
-}
-
-Function Get-ZService {
-    ,$service
 }

@@ -37,8 +37,4 @@ function Remove-ZLocation {
     Remove-ZDBLocation $path
 }
 
-$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    Write-Warning "[ZLocation] module was removed, but service was not closed."
-}
-
 Export-ModuleMember -Function @("Get-ZLocation", "Add-ZWeight", "Remove-ZLocation")
