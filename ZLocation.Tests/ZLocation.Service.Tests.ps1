@@ -27,7 +27,7 @@ Describe 'ZLocation.Service' {
             $count = $service.get() | Measure-Object | Select-Object -ExpandProperty Count
 
             It 'Adds and retrieves a location' {
-                $service.add($path, 1)
+                Update-ZDBLocation -Path $path
                 $service.get() | Should -HaveCount ($count + 1)
                 $l = [Location]::new()
                 $l.path = $path
@@ -36,7 +36,7 @@ Describe 'ZLocation.Service' {
             }
 
             It 'Adds and removes a location' {
-                $service.add($path, 1)
+                Update-ZDBLocation -Path $path
                 Remove-ZDBLocation $path
                 $service.get() | Measure-Object | Select-Object -ExpandProperty Count | Should -Be $count
             }

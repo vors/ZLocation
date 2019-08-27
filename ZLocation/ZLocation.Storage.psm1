@@ -28,8 +28,7 @@ function Add-ZWeight {
         [Parameter(Mandatory=$true)] [string]$Path,
         [Parameter(Mandatory=$true)] [double]$Weight
     )
-    $service = Get-ZService
-    $service.Add($path, $weight)
+    Update-ZDBLocation $path $weight
 }
 
 function Remove-ZLocation {

@@ -29,18 +29,26 @@ class Service {
             }
         })
     }
-    [void] Add([string]$path, [double]$weight) {
-        dboperation {
-            $l = DBGetById $collection $path ([Location])
-            if($l) {
-                $l.weight += $weight
-                DBUpdate $collection $l
-            } else {
-                $l = [Location]::new()
-                $l.path = $path
-                $l.weight = $weight
-                DBInsert $collection $l
-            }
+}
+
+# Increase the weight of a location in the database, adding it if not present.
+function Update-ZDBLocation {
+    param (
+        # The location to update or add
+        [Parameter(Mandatory=$true)] [string]$Path,
+        # The amount to increase the path's weight by
+        [double]$Weight = 1.0
+    )
+    dboperation {
+        $l = DBGetById $collection $path ([Location])
+        if($l) {
+            $l.weight += $weight
+            DBUpdate $collection $l
+        } else {
+            $l = [Location]::new()
+            $l.path = $path
+            $l.weight = $weight
+            DBInsert $collection $l
         }
     }
 }
@@ -136,7 +144,7 @@ if((-not $dbExists) -and $legacyBackupExists) {
     Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
     Get-Content $legacyBackupPath | Where-Object { $_ -ne $null } | ForEach-Object {
         $split = $_ -split "`t"
-        $service.add($split[0], $split[1])
+        Update-ZDBLocation $split[0] $split[1]
     }
 }
 
