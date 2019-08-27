@@ -66,9 +66,9 @@ function Remove-ZDBLocation {
 
 class Location {
     [LiteDB.BsonId()]
-    [string] $path;
+    [string] $Path;
 
-    [double] $weight;
+    [double] $Weight;
 }
 
 function Get-ZLocationDatabaseFilePath
