@@ -37,7 +37,7 @@ Describe 'ZLocation.Service' {
 
             It 'Adds and removes a location' {
                 $service.add($path, 1)
-                $service.Remove($path)
+                Remove-ZDBLocation $path
                 $service.get() | Measure-Object | Select-Object -ExpandProperty Count | Should -Be $count
             }
         }

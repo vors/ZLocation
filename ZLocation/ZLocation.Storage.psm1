@@ -36,8 +36,7 @@ function Remove-ZLocation {
     param (
         [Parameter(Mandatory=$true)] [string]$Path
     )
-    $service = Get-ZService
-    $service.Remove($path)
+    Remove-ZDBLocation $path
 }
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {

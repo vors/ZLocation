@@ -43,11 +43,17 @@ class Service {
             }
         }
     }
-    [void] Remove([string]$path) {
-        dboperation {
-            # Use DB's internal column name, not mapped name
-            DBDelete $collection ([LiteDB.Query]::EQ('_id', [LiteDB.BSONValue]::new($path)))
-        }
+}
+
+# Remove a location from the database
+function Remove-ZDBLocation {
+    param (
+        # The location to remove from the database
+        [Parameter(Mandatory=$true)] [string]$Path
+    )
+    dboperation {
+        # Use DB's internal column name, not mapped name
+        DBDelete $collection ([LiteDB.Query]::EQ('_id', [LiteDB.BSONValue]::new($path)))
     }
 }
 
