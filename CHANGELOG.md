@@ -1,5 +1,7 @@
 CHANGELOG
 -------------
+## 1.3.0
+* Prefer exact match over the weight when picking the location (#90)
 
 ## 1.2.0
 
