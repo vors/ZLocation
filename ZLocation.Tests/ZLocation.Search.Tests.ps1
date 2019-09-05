@@ -106,4 +106,22 @@ Describe 'Find-Matches filters results correctly' {
             Find-Matches $data 'fo' | Should Be @($fooPath, $afooPath)
         }
     }
+
+    Context 'Prefer exact match over weight and prefix' {
+        if($IsWindows) {
+            $fooPath = 'C:\foo'
+            $afooPath = 'C:\foo2'
+        } else {
+            $fooPath = '/foo'
+            $afooPath = '/foo2'
+        }
+        $data = @{
+            $fooPath = 1.0
+            $afooPath = 1000.0
+        }
+
+        It 'Uses prefix match' {
+            Find-Matches $data 'foo' | Should Be @($fooPath, $afooPath)
+        }
+    }
 }

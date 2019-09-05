@@ -21,13 +21,15 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
         # /foo = 1.0
         # /afoo = 2.0
         # and query is "fo", we should prefer /foo
+        # Similarly, with the same query `fo`, the full match `/fo` should win over `/fo2`
         $res = $hash.GetEnumerator() | % {
             New-Object -TypeName PSCustomObject -Property @{
                 Name=$_.Name
                 Value=$_.Value
                 Starts=[int](Start-WithPrefix -Path $_.Name -lowerPrefix $lowerPrefix)
+                IsExactMatch=[int](IsExactMatch -Path $_.Name -lowerPrefix $lowerPrefix)
             }
-        } | Sort-Object -Property Starts, Value -Descending
+        } | Sort-Object -Property IsExactMatch, Starts, Value -Descending
     } else {
         $res = $hash.GetEnumerator() | Sort-Object -Property Value -Descending
     }
@@ -40,6 +42,11 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
 function Start-WithPrefix([string]$Path, [string]$lowerPrefix) {
     $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
     return $lowerLeaf.StartsWith($lowerPrefix)
+}
+
+function IsExactMatch([string]$Path, [string]$lowerPrefix) {
+    $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
+    return $lowerLeaf -eq $lowerPrefix
 }
 
 function Test-FuzzyMatch([string]$path, [string[]]$query)
