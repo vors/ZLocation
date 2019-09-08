@@ -51,7 +51,11 @@ function Start-WithPrefix {
     return $lowerLeaf.StartsWith($lowerPrefix)
 }
 
-function IsExactMatch([string]$Path, [string]$lowerPrefix) {
+function IsExactMatch {
+    param (
+        [Parameter(Mandatory=$true)] [string]$Path, 
+        [Parameter(Mandatory=$true)] [string]$lowerPrefix
+    )
     $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
     return $lowerLeaf -eq $lowerPrefix
 }
