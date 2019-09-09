@@ -2,8 +2,11 @@ Set-StrictMode -Version Latest
 
 if ((Get-Variable IsWindows -ErrorAction Ignore) -eq $null) { $IsWindows = $true }
 
-function Find-Matches([hashtable]$hash, [string[]]$query)
-{
+function Find-Matches {
+    param (
+        [Parameter(Mandatory=$true)] [hashtable]$hash, 
+        [string[]]$query
+    )
     $hash = $hash.Clone()
     foreach ($key in ($hash.GetEnumerator() | %{$_.Name}))
     {
@@ -39,18 +42,29 @@ function Find-Matches([hashtable]$hash, [string[]]$query)
     }
 }
 
-function Start-WithPrefix([string]$Path, [string]$lowerPrefix) {
+function Start-WithPrefix {
+    param (
+        [Parameter(Mandatory=$true)] [string]$Path, 
+        [Parameter(Mandatory=$true)] [string]$lowerPrefix
+    )
     $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
     return $lowerLeaf.StartsWith($lowerPrefix)
 }
 
-function IsExactMatch([string]$Path, [string]$lowerPrefix) {
+function IsExactMatch {
+    param (
+        [Parameter(Mandatory=$true)] [string]$Path, 
+        [Parameter(Mandatory=$true)] [string]$lowerPrefix
+    )
     $lowerLeaf = (Split-Path -Leaf $Path).ToLower()
     return $lowerLeaf -eq $lowerPrefix
 }
 
-function Test-FuzzyMatch([string]$path, [string[]]$query)
-{
+function Test-FuzzyMatch {
+    param (
+        [Parameter(Mandatory=$true)] [string]$path,
+        [string[]]$query
+    )
     function contains([string]$left, [string]$right) {
         return [bool]($left.IndexOf($right, [System.StringComparison]::OrdinalIgnoreCase) -ge 0)
     }

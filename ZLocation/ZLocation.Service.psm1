@@ -6,8 +6,27 @@ class Service {
     [Collections.Generic.IEnumerable[Location]] Get() {
         return (dboperation {
             # Return an enumerator of all location entries
-            [Location[]]$arr = DBFind $collection ([LiteDB.Query]::All()) ([Location])
-            ,$arr
+            try {
+                [Location[]]$arr = DBFind $collection ([LiteDB.Query]::All()) ([Location])
+                , $arr
+            }
+            catch [System.InvalidCastException] {
+                Write-Warning "Caught InvalidCastException when reading db, probably [LiteDB.ObjectId] entry present."
+                $oidquery = [LiteDB.Query]::Where('_id', {$args -like '{"$oid":"*"}'})
+                $problementries = (,$collection.Find($oidquery))
+                if ($problementries.Count -gt 0) {
+                    Write-Warning "Found $($problementries.Count) problem entries, attempting to remove..."
+                    $problementries | Write-Debug
+                    try {
+                        DBDelete $collection $oidquery | Out-Null
+                        Write-Warning 'Problem entries successfully removed, please repeat your command.'
+                    } catch {
+                        Write-Error 'Problem entries could not be removed.'
+                    }
+                } else {
+                        Write-Error 'No problem entries found, please open an issue on https://github.com/vors/ZLocation'
+                }
+            }
         })
     }
     [void] Add([string]$path, [double]$weight) {
@@ -57,7 +76,10 @@ function Get-ZLocationLegacyBackupFilePath
  See: https://github.com/mbdavid/LiteDB/wiki/Concurrency
  Exposes $db and $collection variables for use by the $scriptblock
 #>
-function dboperation($private:scriptblock) {
+function dboperation {
+    param (
+        [Parameter(Mandatory=$true)] $private:scriptblock
+    )
     $Private:Mode = if (Get-Variable IsMacOS -ErrorAction Ignore) { 'Exclusive' } else { 'Shared' }
     # $db and $collection will be in-scope within $scriptblock
     $db = DBOpen "Filename=$( Get-ZLocationDatabaseFilePath ); Mode=$Mode"
@@ -68,13 +90,16 @@ function dboperation($private:scriptblock) {
             try {
                 & $private:scriptblock
                 return
-            } catch {
-                $rand = Get-Random 100
-                Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
+            } catch [System.IO.IOException] {
+                # The process cannot access the file '~\z-location.db' because it is being used by another process.
+                if ($__i -lt 4 ) {
+                    $rand = Get-Random 100
+                    Start-Sleep -Milliseconds (($__i + 1) * 100 - $rand)
+                } else {
+                    throw [System.IO.IOException] 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation'
+                }
             }
         }
-        Write-Error $error[0]
-        throw 'Cannot execute database operation after 5 attempts, please open an issue on https://github.com/vors/ZLocation'
     } finally {
         $db.dispose()
     }
