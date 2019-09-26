@@ -41,7 +41,7 @@ Goals / Key features
 
 *  Support for multiple PS sessions.
 *  Good built-in ranking algorithm.
-*  Customizable matching algorithm and weight function.
+*  ~~Customizable matching algorithm and weight function.~~
 *  Works on Windows, Linux and MacOS.
 
 ## Install
