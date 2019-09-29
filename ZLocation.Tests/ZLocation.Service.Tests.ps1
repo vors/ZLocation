@@ -12,6 +12,14 @@ Describe 'ZLocation.Service' {
             # It 'Is referring to test DB' {
             #     $dbpath | Should -BeLike $testdbpattern
             # }
+
+            It 'Initializes a database' {
+                if (Test-Path ($dbpath)) {Remove-Item $dbpath}
+
+                Initialize-ZLocationDB
+                Assert-MockCalled Get-ZLocationDatabaseFilePath  
+                Test-Path $dbpath | Should -Be $true
+            }
         }
     }
 
@@ -22,22 +30,26 @@ Describe 'ZLocation.Service' {
             if ($dbpath -notlike $testdbpattern) {throw 'Not using test database, aborting tests'}
             if (-not (Test-ZLocationDBUnlocked)) {throw 'Database is locked, aborting tests'}
 
+            BeforeEach {
+                if (Test-Path $dbpath) {Remove-Item $dbpath}
+                Initialize-ZLocationDB
+            }
+
             $path = [guid]::NewGuid().Guid 
-            $count = Get-ZDBLocation| Measure-Object | Select-Object -ExpandProperty Count
 
             It 'Adds and retrieves a location' {
                 Update-ZDBLocation -Path $path
-                Get-ZDBLocation | Should -HaveCount ($count + 1)
+                Get-ZDBLocation | Should -HaveCount 1
                 $l = [Location]::new()
                 $l.path = $path
                 $l.weight = 1
-                Get-ZDBLocation | Where-Object { $_.Path -eq $path } | Should -HaveCount 1
+                Get-ZDBLocation | Select-Object -First 1 | ConvertTo-Json | Should -Be ($l | ConvertTo-Json)
             }
 
             It 'Adds and removes a location' {
                 Update-ZDBLocation -Path $path
                 Remove-ZDBLocation $path
-                Get-ZDBLocation | Measure-Object | Select-Object -ExpandProperty Count | Should -Be $count
+                Get-ZDBLocation | Should -BeNullOrEmpty
             }
         }
     }

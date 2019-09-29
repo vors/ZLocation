@@ -127,20 +127,26 @@ function Test-ZLocationDBUnlocked {
     }
 }
 
-$dbExists = Test-Path (Get-ZLocationDatabaseFilePath)
-$legacyBackupPath = Get-ZLocationLegacyBackupFilePath
-$legacyBackupExists = ($legacyBackupPath -ne $null) -and (Test-Path $legacyBackupPath)
+function Initialize-ZLocationDB {
+    $dbExists = Test-Path (Get-ZLocationDatabaseFilePath)
+    $legacyBackupPath = Get-ZLocationLegacyBackupFilePath
+    $legacyBackupExists = ($null -ne $legacyBackupPath) -and (Test-Path $legacyBackupPath)
 
-# Create empty db, collection, and index if it doesn't exist
-dboperation {
-    $collection.EnsureIndex('path')
-}
+    if (-not($dbExists)) {
+        # Create empty db, collection, and index if it doesn't exist
+        dboperation {
+            $collection.EnsureIndex('path')
+        }
 
-# Migrate legacy backup into database if appropriate
-if((-not $dbExists) -and $legacyBackupExists) {
-    Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
-    Get-Content $legacyBackupPath | Where-Object { $_ -ne $null } | ForEach-Object {
-        $split = $_ -split "`t"
-        Update-ZDBLocation $split[0] $split[1]
+        # Migrate legacy backup into database if appropriate
+        if ($legacyBackupExists) {
+            Write-Warning "ZLocation changed storage from $legacyBackupPath to $(Get-ZLocationDatabaseFilePath), feel free to remove the old txt file"
+            Get-Content $legacyBackupPath | Where-Object { $_ -ne $null } | ForEach-Object {
+                $split = $_ -split "`t"
+                Add-ZDBLocation $split[0] $split[1]
+            }
+        }
     }
 }
+
+Initialize-ZLocationDB
