@@ -105,6 +105,15 @@ function dboperation {
     }
 }
 
+function Test-ZLocationDBUnlocked {
+    try {
+        [IO.File]::OpenWrite((Get-ZLocationDatabaseFilePath)).close()
+        $true
+    } catch {
+        $false
+    }
+}
+
 $dbExists = Test-Path (Get-ZLocationDatabaseFilePath)
 $legacyBackupPath = Get-ZLocationLegacyBackupFilePath
 $legacyBackupExists = ($legacyBackupPath -ne $null) -and (Test-Path $legacyBackupPath)
