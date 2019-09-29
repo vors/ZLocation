@@ -64,8 +64,12 @@ Describe 'ZLocation.Service' {
             }
 
             It "can remove malformed location entries" {
+                # Ensure nothing else can be connecting to $db to placate AppVeyor.
+                $db.Dispose()
                 $service = Get-ZService
                 $service.get()
+                $db = [LiteDB.LiteDatabase]::new($connectionString)
+                $collection = $db.GetCollection('Location')
                 $malformedEntries = $collection.Find($oidquery)
                 $malformedEntries | Should -HaveCount 0
             }
