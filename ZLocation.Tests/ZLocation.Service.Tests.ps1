@@ -54,37 +54,37 @@ Describe 'ZLocation.Service' {
         }
     }
 
-    Context "Malformed DB entries" {
-        try {
-            # Connect to the database and add some malformed entries
-            Add-Type -Path $PSScriptRoot\..\ZLocation\LiteDB\LiteDB.dll
-            $connectionString = "Filename=$($testDb); Mode=Shared"
-            $db = [LiteDB.LiteDatabase]::new($connectionString)
-            $collection = $db.GetCollection('Location')
-            $oidquery = [LiteDB.Query]::Where('_id',{$args -like '{"$oid":"*"}'})
+    # Context "Malformed DB entries" {
+    #     try {
+    #         # Connect to the database and add some malformed entries
+    #         Add-Type -Path $PSScriptRoot\..\ZLocation\LiteDB\LiteDB.dll
+    #         $connectionString = "Filename=$($testDb); Mode=Shared"
+    #         $db = [LiteDB.LiteDatabase]::new($connectionString)
+    #         $collection = $db.GetCollection('Location')
+    #         $oidquery = [LiteDB.Query]::Where('_id',{$args -like '{"$oid":"*"}'})
             
-            # Create and insert a malformed location
-            $bsondocument = [LiteDB.BsonDocument]::new()
-            $bsondocument['weight'] = 1234
-            $collection.Insert($bsondocument)
+    #         # Create and insert a malformed location
+    #         $bsondocument = [LiteDB.BsonDocument]::new()
+    #         $bsondocument['weight'] = 1234
+    #         $collection.Insert($bsondocument)
 
-            It "confirms malformed entries inserted" {
-                # This actually tests the query more than anything.
-                $malformedEntries = (,$collection.Find($oidquery))
-                $malformedEntries | Should -HaveCount 1
-            }
+    #         It "confirms malformed entries inserted" {
+    #             # This actually tests the query more than anything.
+    #             $malformedEntries = (,$collection.Find($oidquery))
+    #             $malformedEntries | Should -HaveCount 1
+    #         }
 
-            It "can remove malformed location entries" {
-                # Ensure nothing else can be connecting to $db to placate AppVeyor.
-                $db.Dispose()
-                Get-ZDBLocation
-                $db = [LiteDB.LiteDatabase]::new($connectionString)
-                $collection = $db.GetCollection('Location')
-                $malformedEntries = $collection.Find($oidquery)
-                $malformedEntries | Should -HaveCount 0
-            }
-        } finally {
-            $db.Dispose()
-        }
-    }
+    #         It "can remove malformed location entries" {
+    #             # Ensure nothing else can be connecting to $db to placate AppVeyor.
+    #             $db.Dispose()
+    #             Get-ZDBLocation
+    #             $db = [LiteDB.LiteDatabase]::new($connectionString)
+    #             $collection = $db.GetCollection('Location')
+    #             $malformedEntries = $collection.Find($oidquery)
+    #             $malformedEntries | Should -HaveCount 0
+    #         }
+    #     } finally {
+    #         $db.Dispose()
+    #     }
+    # }
 }
