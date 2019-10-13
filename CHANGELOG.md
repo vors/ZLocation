@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+## vNext
+* Attempt to handle the malformed database entries causing a number of reported issues ([#87](https://github.com/vors/ZLocation/pull/87))
+* Add locations from Windows 10's Frequent Folders list to database ([#95](https://github.com/vors/ZLocation/pull/95))
+
 ## 1.3.0
 * Prefer exact match over the weight when picking the location (#90)
 
