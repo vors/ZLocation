@@ -158,13 +158,57 @@ function Set-ZLocation([Parameter(ValueFromRemainingArguments)][string[]]$match)
 }
 
 <#
+    .SYNOPSIS
+    Jump to popular directories.
+
+    .DESCRIPTION
     This is the main entry point in the interactive usage of ZLocation.
-    It's intended to be used as an alias z
+    It's intended to be used as an alias z.
 
     Usage:
         z - prints available directories
         z -l foo - prints available directories scoped to foo query
         z foo - jumps into the location that matches foo
+        z foo <TAB> - pressing tab cycles through different matches for foo
+        z - - undos the last z jump.
+
+    .EXAMPLE
+    PS>z
+    Weight Path
+    ------ ----
+        7 C:\Windows
+        1 C:\Windows\System
+        27 C:\WINDOWS\system32
+        [...]
+
+    .EXAMPLE
+    C:\>z foo
+    C:\foo>
+
+    .EXAMPLE
+    C:\>z foo <PRESS TAB; NOT ENTER>
+    C:\>z C:\foo <PRESS TAB AGAIN>
+    C:\>z C:\another_less_popular\foo <PRESS TAB AGAIN>
+    C:\>z C:\least_popular\foo
+    C:\least_popular\foo>
+
+    .EXAMPLE
+    PS>z -l sys
+    Weight Path
+    ------ ----
+        27 C:\WINDOWS\system32
+         1 C:\Windows\System
+
+    .EXAMPLE
+    C:\>z foo
+    C:\foo>z bar
+    C:\baz\bar> z -
+    C:\foo>z -
+    C:\>z -
+    C:\>#no-op
+
+    .LINK
+    https://github.com/vors/ZLocation
 #>
 function Invoke-ZLocation
 {
