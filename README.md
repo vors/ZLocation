@@ -36,6 +36,34 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 
 To see all locations matched to a query `foo` use `z -l foo`.
 
+### Navigating to less common directories with tab completion
+
+If `z mydir` doesn't take you to the correct directory, you can also tab through
+ZLocation's suggestions.
+
+For example, pressing tab with `z src` will take you through all of ZLocation's
+completions for `src`.
+
+### Going back
+
+ZLocation keeps a stack of directories as you jump between them. `z -` will
+"pop" the stack: it will move you to the previous directory you jumped to,
+basically letting you undo your `z` navigation.
+
+If the stack is empty (you have only jumped once), `z -` will take you to your
+original directory.
+
+For example:
+
+```ps
+C:\>z foo
+C:\foo>z bar
+C:\baz\bar> z -
+C:\foo>z -
+C:\>z -
+C:\>#no-op
+```
+
 Goals / Key features
 --------------------
 
