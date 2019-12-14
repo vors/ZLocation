@@ -12,7 +12,7 @@
 RootModule = 'ZLocation.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0'
+ModuleVersion = '1.4.0'
 
 # ID used to uniquely identify this module
 GUID = '18e8ca17-7f67-4f1c-85ff-159373bf66f5'
@@ -99,16 +99,16 @@ PrivateData = @{
         # Tags = @()
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/vors/ZLocation/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/vors/ZLocation'
 
         # A URL to an icon representing this module.
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'https://github.com/vors/ZLocation/blob/master/CHANGELOG.md'
 
     } # End of PSData hashtable
 
