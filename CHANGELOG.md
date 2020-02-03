@@ -1,5 +1,8 @@
 CHANGELOG
 -------------
+## 1.4.1
+* Resolve an OS detection bug resulting in errors when importing module on macOS ([#100](https://github.com/vors/ZLocation/issues/100)) (Thanks @nheath!)
+
 ## 1.4.0
 * Attempt to handle the malformed database entries causing a number of reported issues ([#87](https://github.com/vors/ZLocation/pull/87))
 * Add locations from Windows 10's Frequent Folders list to database ([#95](https://github.com/vors/ZLocation/pull/95))
