@@ -241,7 +241,7 @@ function Invoke-ZLocation
 }
 
 function Get-FrequentFolders {
-    If (((Get-Variable IsWindows -ErrorAction Ignore) -or $PSVersionTable.PSVersion.Major -lt 6) -and
+    If (((Get-Variable IsWindows -ErrorAction Ignore).Value -or $PSVersionTable.PSVersion.Major -lt 6) -and
             ([environment]::OSVersion.Version.Major -ge 10)) {
         if (-not $ExecutionContext.SessionState.LanguageMode -eq 'ConstrainedLanguage') {
             $QuickAccess = New-Object -ComObject shell.application
