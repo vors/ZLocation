@@ -5,7 +5,7 @@ image:
 - Visual Studio 2017
 - Visual Studio 2019
 - Ubuntu
-- Ubuntu1804
+- macOS
 
 install:
   - ps: Install-Module Pester -Scope CurrentUser -Force
