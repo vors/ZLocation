@@ -1,5 +1,8 @@
 CHANGELOG
 -------------
+## 1.4.2
+* Stop PowerShell < 6 on Windows emitting an error on import. ([#103](https://github.com/vors/ZLocation/issues/103))
+
 ## 1.4.1
 * Resolve an OS detection bug resulting in errors when importing module on macOS ([#100](https://github.com/vors/ZLocation/issues/100)) (Thanks @nheath!)
 
