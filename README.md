@@ -94,8 +94,19 @@ Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.C
 
 ### Note
 
-ZLocation alternates your `prompt` function to track the location.
-If you have a custom prompt function in `$profile`, you should place `Import-Module ZLocation` **after** the prompt customization.
+ZLocation alternates your `prompt` function to track the location. Meaning if you use this module with other modules that modifies your prompt function (e.g. such as `posh-git`), then you'd need to adjust your `profile.ps1` file. The statement `Import-Module ZLocation` needs to be placed after the other modules that modifies your prompt function.
+
+You can open up `profile.ps1` through using any of the below command:
+
+```powershell
+notepad $PROFILE\..\profile.ps1
+notepad $env:USERPROFILE\Documents\WindowsPowerShell\profile.ps1
+```
+
+Alternatively, type up the below in your file explorer, and then edit the `profile.ps1` file with an editor of your choice:
+```
+%USERPROFILE%\Documents\WindowsPowerShell
+```
 
 License
 -------
