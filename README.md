@@ -94,7 +94,7 @@ Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.C
 
 ### Note
 
-ZLocation alternates your `prompt` function to track the location. Meaning if you use this module with other modules that modifies your prompt function (e.g. such as `posh-git`), then you'd need to adjust your `profile.ps1` file. The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function.
+ZLocation alternates your prompt function to track the location. Meaning if you use this module with other modules that modifies your prompt function (e.g. such as `posh-git`), then you'd need to adjust your `profile.ps1` file. The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function.
 
 You can open up `profile.ps1` through using any of the below commands:
 
