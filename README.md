@@ -105,6 +105,7 @@ notepad $Home\Documents\WindowsPowerShell\profile.ps1
 ```
 
 Alternatively, type up the below in your file explorer, and then edit the `profile.ps1` file with an editor of your choice:
+
 ```
 %USERPROFILE%\Documents\WindowsPowerShell
 ```
