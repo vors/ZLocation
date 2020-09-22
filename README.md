@@ -78,24 +78,37 @@ Install from [PowerShellGet Gallery](https://www.powershellgallery.com/packages/
 Install-Module ZLocation -Scope CurrentUser
 ```
 
-Make sure to **include ZLocation import in your `$profile`**.
-It intentionally doesn't alternate `$profile` automatically on installation.
+Make sure to **include ZLocation import in your `$PROFILE`**.
+It intentionally doesn't alternate `$PROFILE` automatically on installation.
 
 This one-liner installs ZLocation, imports it and adds it to a profile.
 
 ```powershell
-Install-Module ZLocation -Scope CurrentUser; Import-Module ZLocation; Add-Content -Value "`r`n`r`nImport-Module ZLocation`r`n" -Encoding utf8 -Path $profile.CurrentUserAllHosts
+Install-Module ZLocation -Scope CurrentUser; Import-Module ZLocation; Add-Content -Value "`r`n`r`nImport-Module ZLocation`r`n" -Encoding utf8 -Path $PROFILE.CurrentUserAllHosts
 ```
 
-If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$profile` after import. 
+If you want to display some additional information about ZLocation on start-up, you can put this snippet in `$PROFILE` after import. 
 ```powershell
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
 ### Note
 
-ZLocation alternates your `prompt` function to track the location.
-If you have a custom prompt function in `$profile`, you should place `Import-Module ZLocation` **after** the prompt customization.
+ZLocation alternates your prompt function to track the location. Meaning if you use this module with other modules that modifies your prompt function (e.g. such as `posh-git`), then you'd need to adjust your [Powershell profile file](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7). The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function.
+
+You can open up `profile.ps1` through using any of the below commands:
+
+```powershell
+notepad $PROFILE.CurrentUserAllHosts
+notepad $env:USERPROFILE\Documents\WindowsPowerShell\profile.ps1
+notepad $Home\Documents\WindowsPowerShell\profile.ps1
+```
+
+Alternatively, type up the below in your file explorer, and then edit the `profile.ps1` file with an editor of your choice:
+
+```
+%USERPROFILE%\Documents\WindowsPowerShell
+```
 
 License
 -------
