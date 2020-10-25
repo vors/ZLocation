@@ -53,8 +53,8 @@ function Register-PromptHook
     if (-not (Test-Path function:\global:ZlocationOrigPrompt)) {
         Copy-Item function:\prompt function:\global:ZlocationOrigPrompt
         $global:ZLocationPromptScriptBlock = {
-            Update-ZLocation $pwd
             ZLocationOrigPrompt
+            Update-ZLocation $pwd
         }
 
         Set-Content -Path function:\prompt -Value $global:ZLocationPromptScriptBlock -Force
