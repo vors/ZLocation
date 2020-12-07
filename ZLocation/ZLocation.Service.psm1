@@ -60,8 +60,14 @@ class Location {
 
 function Get-ZLocationDatabaseFilePath
 {
-    return (Join-Path $HOME 'z-location.db')
+	$envDbPath = $env:PS_ZLOCATION_DATABASE_PATH
+    if (-not [string]::IsNullOrEmpty($envDbPath)) {
+        return $envDbPath
+    } else {
+        return Join-Path $HOME 'z-location.db'
+    }
 }
+
 # Returns path to legacy ZLocation backup file.
 function Get-ZLocationLegacyBackupFilePath
 {
