@@ -9,7 +9,7 @@ function Get-ZLocation($Match)
     $hash = [Collections.HashTable]::new()
     foreach ($item in $service.Get())
     {
-        $hash.add($item.path, $item.weight)
+        $hash[$item.path] = $item.weight
     }
 
     if ($Match)
