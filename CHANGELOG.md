@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+## 1.4.3
+* README and setup instruction improvements ([#106](https://github.com/vors/ZLocation/pull/106)) (Thanks @deltoss)
+* Avoid an exception processing results in Get-ZLocation ([#112](https://github.com/vors/ZLocation/issues/112)) (Thanks @kahlin)
+
 ## 1.4.2
 * Stop PowerShell < 6 on Windows emitting an error on import. ([#103](https://github.com/vors/ZLocation/issues/103))
 

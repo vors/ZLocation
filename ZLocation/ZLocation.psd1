@@ -12,7 +12,7 @@
 RootModule = 'ZLocation.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.4.2'
+ModuleVersion = '1.4.3'
 
 # ID used to uniquely identify this module
 GUID = '18e8ca17-7f67-4f1c-85ff-159373bf66f5'
