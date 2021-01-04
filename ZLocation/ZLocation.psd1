@@ -27,7 +27,7 @@ Copyright = '(c) 2015-2018 Sergei Vorobev. All rights reserved.'
 Description = 'ZLocation is the new Jump-Location. A `cd` that learns.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '5.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
