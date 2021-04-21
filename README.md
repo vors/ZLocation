@@ -5,8 +5,8 @@ ZLocation
 
 [![Join the chat at https://gitter.im/vors/ZLocation](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vors/ZLocation?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Tracks your most used directories, based on number of previously run commands.
-After  a  short  learning  phase, `z` will take you to the most popular directory that matches all of the regular expressions given on the command line.
+Tracks your most used directories, based on the number of commands ran previously.
+After a short learning phase, `z` will take you to the most popular directory that matches all of the regular expressions given on the command line.
 You can use **Tab-Completion / Intellisense** to pick directories that are not the first choice.
 
 ZLocation is the successor of [Jump-Location](https://github.com/tkellogg/Jump-Location).
@@ -16,10 +16,10 @@ Usage
 -----
 
 ZLocation keeps track of your `$pwd` (current folder).
-Once visited, folder become known to ZLocation.
+Once visited, the folder becomes known to ZLocation.
 You can `cd` with just a hint of the path!
 
-The full command name is `Invoke-ZLocation`, but in examples I use alias `z`.
+The full command name is `Invoke-ZLocation`, but in the examples I use the alias `z`.
 It's all about navigation speed, isn't it?
 
 ```
@@ -32,7 +32,7 @@ PS C:\dev\ZLocation\ZLocation.Tests>
 
 ### List known locations
 
-`z` without arguments will list all the known locations and their weights (short-cut for `Get-ZLocation`)
+`z` without arguments will list all the known locations and their weights (shortcut for `Get-ZLocation`)
 
 To see all locations matched to a query `foo` use `z -l foo`.
 
@@ -79,7 +79,7 @@ Install-Module ZLocation -Scope CurrentUser
 ```
 
 Make sure to **include ZLocation import in your `$PROFILE`**.
-It intentionally doesn't alternate `$PROFILE` automatically on installation.
+It intentionally doesn't alter `$PROFILE` automatically on installation.
 
 This one-liner installs ZLocation, imports it and adds it to a profile.
 
@@ -92,22 +92,36 @@ If you want to display some additional information about ZLocation on start-up, 
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
+Some features are configurable, these are the defaults:
+```powershell
+Import-Module ZLocation  -ArgumentList @{AddFrequentFolders = $True; RegisterPromptHook = $True}
+```
+- turn off `AddFrequentFolders` to not add directories from Explorer's QuickAccess to the ZLocation database automatically (this also results in faster loading times)
+- turn off `RegisterPromptHook` to not automaticaly hook the prompt, see below
+
 ### Note
 
-ZLocation alternates your prompt function to track the location. Meaning if you use this module with other modules that modifies your prompt function (e.g. such as `posh-git`), then you'd need to adjust your [Powershell profile file](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7). The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function.
+By default importing ZLocation alters your prompt function to track the location. Meaning if you use this module with other modules that modify your prompt function (e.g. `posh-git`), then you'd need to adjust your [Powershell profile file](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7). The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function. As an alternative import the ZLocation module with `RegisterPromptHook=$False` and add a call to `Update-ZLocation $pwd` in your own prompt function.
 
-You can open up `profile.ps1` through using any of the below commands:
+You can open `profile.ps1` using the below commands:
 
 ```powershell
+# In case this is a fresh OS install the directory itself might not yet exist so create it.
+New-Item -Type Directory (Split-Path -Parent $PROFILE.CurrentUserAllHosts) -ErrorAction SilentlyContinue
+# Open the file. Use CurrentUserCurrentHost to get the profile for the current host, e.g. PowerShell ISE.
 notepad $PROFILE.CurrentUserAllHosts
-notepad $env:USERPROFILE\Documents\WindowsPowerShell\profile.ps1
-notepad $Home\Documents\WindowsPowerShell\profile.ps1
 ```
 
-Alternatively, type up the below in your file explorer, and then edit the `profile.ps1` file with an editor of your choice:
+Alternatively, type the below in your file explorer, and then create or edit the `profile.ps1` file with an editor of your choice:
 
 ```
 %USERPROFILE%\Documents\WindowsPowerShell
+```
+
+Or when using Powershell Core:
+
+```
+%USERPROFILE%\Documents\PowerShell
 ```
 
 License

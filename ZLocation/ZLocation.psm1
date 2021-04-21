@@ -1,4 +1,17 @@
+param([parameter(Position=0, Mandatory=$false)] [Hashtable] $ModuleArguments=@{})
+
 Set-StrictMode -Version Latest
+
+# Defaults from before we had arguments.
+$defaultArgumentValues = @{
+    AddFrequentFolders = $True;
+    RegisterPromptHook = $True;
+}
+foreach ($item in $defaultArgumentValues.GetEnumerator()) {
+    if (-not $ModuleArguments.ContainsKey($item.Name)) {
+        $ModuleArguments[$item.Name] = $item.Value
+    } 
+}
 
 # Listing nested modules in .psd1 creates additional scopes and Pester cannot mock cmdlets in those scopes.
 # Instead we import them here which works.
@@ -63,9 +76,11 @@ function Register-PromptHook
 
 # On removal/unload of the module, restore original prompt or LocationChangedAction event handler.
 $ExecutionContext.SessionState.Module.OnRemove = {
-    Copy-Item function:\global:ZlocationOrigPrompt function:\global:prompt
-    Remove-Item function:\ZlocationOrigPrompt
-    Remove-Variable ZLocationPromptScriptBlock -Scope Global
+    if (Test-Path function:\global:ZlocationOrigPrompt) {
+        Copy-Item function:\global:ZlocationOrigPrompt function:\global:prompt
+        Remove-Item function:\ZlocationOrigPrompt
+        Remove-Variable ZLocationPromptScriptBlock -Scope Global
+    }
 }
 
 #
@@ -252,9 +267,12 @@ function Get-FrequentFolders {
     }
 }
 
-Get-FrequentFolders | ForEach-Object {Add-ZWeight -Path $_ -Weight 0}
-
-Register-PromptHook
+if ($ModuleArguments.AddFrequentFolders) {
+    Get-FrequentFolders | ForEach-Object {Add-ZWeight -Path $_ -Weight 0}
+}
+if ($ModuleArguments.RegisterPromptHook) {
+    Register-PromptHook
+}
 
 Set-Alias -Name z -Value Invoke-ZLocation
 
