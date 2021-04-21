@@ -92,9 +92,16 @@ If you want to display some additional information about ZLocation on start-up, 
 Write-Host -Foreground Green "`n[ZLocation] knows about $((Get-ZLocation).Keys.Count) locations.`n"
 ```
 
+Some features are configurable, these are the defaults:
+```powershell
+Import-Module ZLocation  -ArgumentList @{AddFrequentFolders = $True; RegisterPromptHook = $True}
+```
+- turn off `AddFrequentFolders` to not add directories from Explorer's QuickAccess to the ZLocation database automatically (this also results in faster loading times)
+- turn off `RegisterPromptHook` to not automaticaly hook the prompt, see below
+
 ### Note
 
-ZLocation alters your prompt function to track the location. Meaning if you use this module with other modules that modify your prompt function (e.g. `posh-git`), then you'd need to adjust your [Powershell profile file](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7). The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modify your prompt function.
+By default importing ZLocation alters your prompt function to track the location. Meaning if you use this module with other modules that modify your prompt function (e.g. `posh-git`), then you'd need to adjust your [Powershell profile file](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-7). The statement `Import-Module ZLocation` needs to be placed **after** the other module imports that modifies your prompt function. As an alternative import the ZLocation module with `RegisterPromptHook=$False` and add a call to `Update-ZLocation $pwd` in your own prompt function.
 
 You can open `profile.ps1` using the below commands:
 
