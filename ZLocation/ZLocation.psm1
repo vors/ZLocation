@@ -252,12 +252,23 @@ function Get-FrequentFolders {
     }
 }
 
+function Clear-NonExistentZLocation {
+    $paths=(Get-ZLocation).Keys
+    foreach ($path in $paths)
+    {
+        if (!(Test-Path $path)) {
+            Remove-ZLocation $path
+            Write-Host $path "removed from ZLocation"
+        }
+    }
+}
+
 Get-FrequentFolders | ForEach-Object {Add-ZWeight -Path $_ -Weight 0}
 
 Register-PromptHook
 
 Set-Alias -Name z -Value Invoke-ZLocation
 
-Export-ModuleMember -Function @('Invoke-ZLocation', 'Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation') -Alias z
+Export-ModuleMember -Function @('Invoke-ZLocation', 'Set-ZLocation', 'Get-ZLocation', 'Pop-ZLocation', 'Remove-ZLocation', 'Clear-NonexistentZLocation') -Alias z
 # export this function to make it accessible from prompt
 Export-ModuleMember -Function Update-ZLocation

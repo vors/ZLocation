@@ -70,7 +70,8 @@ FunctionsToExport = @(
     'Pop-ZLocation',
     'Remove-ZLocation',
     'Set-ZLocation',
-    'Update-ZLocation'
+    'Update-ZLocation',
+    'Clear-NonExistentZLocation'
 )
 
 # Cmdlets to export from this module
