@@ -263,7 +263,11 @@ function Clear-NonExistentZLocation {
     }
 }
 
-Get-FrequentFolders | ForEach-Object {Add-ZWeight -Path $_ -Weight 0}
+Get-FrequentFolders | ForEach-Object {
+    if (Test-Path $_) {
+        Add-ZWeight -Path $_ -Weight 0
+    }
+}
 
 Register-PromptHook
 
