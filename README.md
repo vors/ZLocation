@@ -79,7 +79,7 @@ Install-Module ZLocation -Scope CurrentUser
 ```
 
 Make sure to **include ZLocation import in your `$PROFILE`**.
-It intentionally doesn't alternate `$PROFILE` automatically on installation.
+It intentionally doesn't alter `$PROFILE` automatically on installation.
 
 This one-liner installs ZLocation, imports it and adds it to a profile.
 
