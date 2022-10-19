@@ -5,9 +5,8 @@ Import-Module (Join-Path $PSScriptRoot 'ZLocation.Search.psm1')
 
 function Get-ZLocation($Match)
 {
-    $service = Get-ZService
     $hash = [Collections.HashTable]::new()
-    foreach ($item in $service.Get())
+    foreach ($item in (Get-ZDBLocation))
     {
         $hash[$item.path] = $item.weight
     }
@@ -28,20 +27,14 @@ function Add-ZWeight {
         [Parameter(Mandatory=$true)] [string]$Path,
         [Parameter(Mandatory=$true)] [double]$Weight
     )
-    $service = Get-ZService
-    $service.Add($path, $weight)
+    Update-ZDBLocation $path $weight
 }
 
 function Remove-ZLocation {
     param (
         [Parameter(Mandatory=$true)] [string]$Path
     )
-    $service = Get-ZService
-    $service.Remove($path)
-}
-
-$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
-    Write-Warning "[ZLocation] module was removed, but service was not closed."
+    Remove-ZDBLocation $path
 }
 
 Export-ModuleMember -Function @("Get-ZLocation", "Add-ZWeight", "Remove-ZLocation")
